@@ -15,4 +15,5 @@ import org.springframework.stereotype.Service;
 public class BlockchainRecordServiceImpl extends ServiceImpl<BlockchainRecordMapper, BlockchainRecord>
     implements IBlockchainRecordService {
 
+
 }

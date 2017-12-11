@@ -8,4 +8,6 @@ import com.baomidou.mybatisplus.service.IService;
  * @since 2017-12-11 下午2:08
  */
 public interface IBlockchainRecordService extends IService<BlockchainRecord> {
+
+
 }

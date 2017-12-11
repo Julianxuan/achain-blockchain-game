@@ -1,13 +1,18 @@
 package com.achain.blockchain.game.conf;
 
 
+import com.achain.blockchain.game.domain.entity.BlockchainRecord;
+import com.achain.blockchain.game.service.IBlockchainRecordService;
 import com.achain.blockchain.game.utils.SDKHttpClient;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
@@ -37,18 +42,27 @@ public class Config {
     private final SDKHttpClient httpClient;
 
     @Autowired
+    private IBlockchainRecordService blockchainRecordService;
+
+    @Autowired
     public Config(SDKHttpClient httpClient) {
         this.httpClient = httpClient;
     }
 
 
-//    @PostConstruct
-//    public void getHeaderBlockCount() {
-//        //首先从库里查询最大块,如果查询不到那么就调用rpc查询
-//        String result = httpClient.post(walletUrl, rpcUser, "blockchain_get_block_count", new JSONArray());
-//        JSONObject createTaskJson = JSONObject.parseObject(result);
-//        headerBlockCount = createTaskJson.getLong("result");
-//    }
+    @PostConstruct
+    public void getHeaderBlockCount() {
+        EntityWrapper<BlockchainRecord> wrapper = new EntityWrapper<>();
+        wrapper.orderBy("block_num", false);
+        BlockchainRecord blockchainRecord = blockchainRecordService.selectOne(wrapper);
+        if (Objects.nonNull(blockchainRecord)) {
+            headerBlockCount = blockchainRecord.getBlockNum() + 1;
+        } else {
+            String result = httpClient.post(walletUrl, rpcUser, "blockchain_get_block_count", new JSONArray());
+            JSONObject createTaskJson = JSONObject.parseObject(result);
+            headerBlockCount = createTaskJson.getLong("result");
+        }
+    }
 
 
 }

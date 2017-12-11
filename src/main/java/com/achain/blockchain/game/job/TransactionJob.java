@@ -33,7 +33,7 @@ public class TransactionJob {
         this.blockchainService = blockchainService;
     }
 
-    @Scheduled(fixedDelay = 60 * 1000)
+    @Scheduled(fixedDelay = 10 * 1000)
     public void doTransactionJob() {
         log.info("doTransactionJob|定时任务开始");
         long headerBlockCount = blockchainService.getBlockCount();
