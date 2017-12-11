@@ -25,4 +25,8 @@ public class TransactionDTO implements Serializable{
     private Long blockNum;
 
     private Date trxTime;
+    /**
+     * 调用方法名
+     */
+    private String callAbi;
 }

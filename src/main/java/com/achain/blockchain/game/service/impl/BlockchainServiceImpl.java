@@ -39,7 +39,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
 
     @Override
     public long getBlockCount() {
-        log.info("ActBrowserServiceImpl|getBlockCount 开始处理");
+        log.info("BlockchainServiceImpl|getBlockCount 开始处理");
         String result = httpClient.post(config.walletUrl, config.rpcUser, "blockchain_get_block_count", new JSONArray());
         JSONObject createTaskJson = JSONObject.parseObject(result);
         return createTaskJson.getLong("result");
@@ -47,7 +47,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
 
     @Override
     public JSONArray getBlock(long blockNum) {
-        log.info("ActBrowserServiceImpl|getBlock 开始处理[{}]", blockNum);
+        log.info("BlockchainServiceImpl|getBlock 开始处理[{}]", blockNum);
         String result = httpClient.post(config.walletUrl, config.rpcUser, "blockchain_get_block", String.valueOf(blockNum));
         JSONObject createTaskJson = JSONObject.parseObject(result);
         return createTaskJson.getJSONObject("result").getJSONArray("user_transaction_ids");
@@ -62,7 +62,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
      */
     @Override
     public TransactionDTO getTransaction(long blockNum, String trxId){
-        log.info("ActBrowserServiceImpl|getBlock 开始处理[{}]", trxId);
+        log.info("BlockchainServiceImpl|getBlock 开始处理[{}]", trxId);
         Map<String, Object> map = new HashMap<>(2);
         String result = httpClient.post(config.walletUrl, config.rpcUser, "blockchain_get_transaction", trxId);
         JSONObject createTaskJson = JSONObject.parseObject(result);
@@ -94,7 +94,12 @@ public class BlockchainServiceImpl implements IBlockchainService {
         String resultSignee = httpClient.post(config.walletUrl, config.rpcUser, "blockchain_get_pretty_contract_transaction", jsonArray);
         JSONObject resultJson2 = JSONObject.parseObject(resultSignee).getJSONObject("result");
         Date trxTime = dealTime(resultJson2.getString("timestamp"));
-
+        JSONArray reserved = resultJson2.getJSONArray("reserved");
+        String callAbi = reserved.size() >= 1 ? reserved.getString(0) : null;
+        //没有方法名
+        if(StringUtils.isEmpty(callAbi)){
+            return null;
+        }
         jsonArray = new JSONArray();
         jsonArray.add(blockNum);
         jsonArray.add(trxId);
@@ -110,6 +115,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
         transactionDTO.setEventType(resultJson.getString("event_type"));
         transactionDTO.setBlockNum(blockNum);
         transactionDTO.setTrxTime(trxTime);
+        transactionDTO.setCallAbi(callAbi);
         return transactionDTO;
     }
 
