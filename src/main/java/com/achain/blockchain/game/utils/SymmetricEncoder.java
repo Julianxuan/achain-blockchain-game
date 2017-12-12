@@ -1,9 +1,7 @@
 package com.achain.blockchain.game.utils;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
 import java.security.SecureRandom;
+import java.util.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -50,7 +48,7 @@ public class SymmetricEncoder {
             //解决办法：
             //在项目的Build path中先移除JRE System Library，再添加库JRE System Library，重新编译后就一切正常了。
             //11.将字符串返回
-            return new BASE64Encoder().encode(byteAes);
+            return new String(Base64.getEncoder().encode(byteAes), "UTF-8");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,7 +81,7 @@ public class SymmetricEncoder {
             //7.初始化密码器，第一个参数为加密(Encrypt_mode)或者解密(Decrypt_mode)操作，第二个参数为使用的KEY
             cipher.init(Cipher.DECRYPT_MODE, key);
             //8.将加密并编码后的内容解码成字节数组
-            byte[] byteContent = new BASE64Decoder().decodeBuffer(content);
+            byte[] byteContent = Base64.getDecoder().decode(content);
             byte[] byteDecode = cipher.doFinal(byteContent);
             return new String(byteDecode, "utf-8");
         } catch (Exception e) {
