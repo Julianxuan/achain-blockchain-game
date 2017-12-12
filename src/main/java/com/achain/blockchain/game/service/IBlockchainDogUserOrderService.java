@@ -1,7 +1,7 @@
 package com.achain.blockchain.game.service;
 
+import com.achain.blockchain.game.domain.dto.UserOrderDTO;
 import com.achain.blockchain.game.domain.entity.BlockchainDogUserOrder;
-import com.achain.blockchain.game.domain.enums.OrderStatus;
 import com.baomidou.mybatisplus.service.IService;
 
 /**
@@ -19,9 +19,7 @@ public interface IBlockchainDogUserOrderService extends IService<BlockchainDogUs
 
     /**
      * 更新订单
-     * @param trxId　订单号
-     * @param orderStatus 订单状态
-     * @param errorMessage 错误信息
+     * @param userOrderDTO　更新的信息
      */
-    void updateTrx(String trxId, OrderStatus orderStatus, String errorMessage);
+    void updateTrx(UserOrderDTO userOrderDTO);
 }

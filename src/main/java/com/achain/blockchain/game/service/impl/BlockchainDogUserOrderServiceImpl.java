@@ -1,5 +1,6 @@
 package com.achain.blockchain.game.service.impl;
 
+import com.achain.blockchain.game.domain.dto.UserOrderDTO;
 import com.achain.blockchain.game.domain.entity.BlockchainDogUserOrder;
 import com.achain.blockchain.game.domain.enums.OrderStatus;
 import com.achain.blockchain.game.mapper.BlockchainDogUserOrderMapper;
@@ -7,6 +8,7 @@ import com.achain.blockchain.game.service.IBlockchainDogUserOrderService;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,15 +34,19 @@ public class BlockchainDogUserOrderServiceImpl extends ServiceImpl<BlockchainDog
     }
 
     @Override
-    public void updateTrx(String trxId, OrderStatus orderStatus, String errorMessage) {
-        BlockchainDogUserOrder userOrder = getByTrxId(trxId);
+    public void updateTrx(UserOrderDTO userOrderDTO) {
+        if (StringUtils.isEmpty(userOrderDTO.getTrxId())) {
+            return;
+        }
+        BlockchainDogUserOrder userOrder = getByTrxId(userOrderDTO.getTrxId());
         if (Objects.nonNull(userOrder)) {
-            if (OrderStatus.SUCCESS == orderStatus) {
-                userOrder.setStatus(orderStatus.getIntKey());
-            } else if (OrderStatus.FAIL == orderStatus) {
-                userOrder.setStatus(orderStatus.getIntKey());
-                userOrder.setErrorMessage(errorMessage);
+            if (OrderStatus.SUCCESS == userOrderDTO.getStatus()) {
+                userOrder.setStatus(userOrderDTO.getStatus().getIntKey());
+            } else if (OrderStatus.FAIL == userOrderDTO.getStatus()) {
+                userOrder.setStatus(userOrderDTO.getStatus().getIntKey());
+                userOrder.setErrorMessage(userOrderDTO.getErrorMessage());
             }
+            userOrder.setMethod(userOrderDTO.getMethod());
             baseMapper.updateById(userOrder);
         }
     }

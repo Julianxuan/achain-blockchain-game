@@ -21,6 +21,7 @@ public class BlockchainDogUserOrder implements Serializable {
     private String trxId;
     private Integer status;
     private String errorMessage;
+    private String method;
     private Date createTime;
     private Date updateTime;
 
