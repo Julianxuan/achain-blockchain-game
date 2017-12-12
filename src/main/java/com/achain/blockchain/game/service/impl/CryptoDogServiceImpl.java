@@ -280,6 +280,24 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         }
     }
 
+    @Override
+    public void addMatingTransaction(TransactionDTO transactionDTO) {
+        log.info("addMatingTransaction|transactionDTO={}", transactionDTO);
+        String eventType = transactionDTO.getEventType();
+        String eventParam = transactionDTO.getEventParam();
+
+    }
+
+    @Override
+    public void cancelMatingTransaction(TransactionDTO transactionDTO) {
+
+    }
+
+    @Override
+    public void matingTransfer(TransactionDTO transactionDTO) {
+
+    }
+
     private AuctionDTO getAuction(String[] callParams) {
         try {
             AuctionDTO auctionDTO = new AuctionDTO();

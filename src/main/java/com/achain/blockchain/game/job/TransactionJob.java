@@ -106,7 +106,18 @@ public class TransactionJob {
             case GIFT:
                 cryptoDogService.gift(transactionDTO);
                 break;
+            case MATING_ADD_AUCTION:
+                cryptoDogService.addMatingTransaction(transactionDTO);
+                break;
+            case MATING_CANCEL_AUCTION:
+                cryptoDogService.cancelMatingTransaction(transactionDTO);
+                break;
+            case MATING_BID:
+                cryptoDogService.matingTransfer(transactionDTO);
+                break;
             default:
+                log.error("dealRpcReturnData|没有符合的合约方法|method={}|transactionDTO={}",method,transactionDTO);
+                break;
         }
     }
 

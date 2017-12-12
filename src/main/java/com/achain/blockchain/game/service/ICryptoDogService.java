@@ -42,4 +42,22 @@ public interface ICryptoDogService {
      * @param transactionDTO 原始数据
      */
     void gift(TransactionDTO transactionDTO);
+
+    /**
+     * 繁衍挂单
+     * @param transactionDTO 原始数据
+     */
+    void addMatingTransaction(TransactionDTO transactionDTO);
+
+    /**
+     * 取消繁衍的单子
+     * @param transactionDTO 原始数据
+     */
+    void cancelMatingTransaction(TransactionDTO transactionDTO);
+
+    /**
+     * 繁衍下单
+     * @param transactionDTO 原始数据
+     */
+    void matingTransfer(TransactionDTO transactionDTO);
 }

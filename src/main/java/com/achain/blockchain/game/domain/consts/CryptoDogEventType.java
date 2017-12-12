@@ -26,4 +26,12 @@ public class CryptoDogEventType {
 
     public static final String GIFT_FAIL = "gift_fail";
 
+    public static final String ADD_MATING_SUCCESS = "addMatingTransaction_success";
+
+    public static final String ADD_MATING_FAIL = "addMatingTransaction_fail";
+
+    public static final String CANCEL_MATING_SUCCESS = "cancelMatingTransaction_success";
+
+    public static final String CANCEL_MATING_FAIL = "cancelMatingTransaction_fail";
+
 }
