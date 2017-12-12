@@ -10,7 +10,7 @@ import lombok.Data;
  * @since 2017-12-11 上午10:56
  */
 @Data
-public class TransactionDTO implements Serializable{
+public class TransactionDTO implements Serializable {
 
     private static final long serialVersionUID = -8050539202820124272L;
 

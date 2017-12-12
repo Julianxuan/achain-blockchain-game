@@ -13,7 +13,7 @@ import lombok.Data;
  */
 @TableName("blockchain_record")
 @Data
-public class BlockchainRecord implements Serializable{
+public class BlockchainRecord implements Serializable {
 
     private static final long serialVersionUID = 1432748946229084964L;
 

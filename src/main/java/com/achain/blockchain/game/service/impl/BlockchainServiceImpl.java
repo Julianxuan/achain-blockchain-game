@@ -40,7 +40,8 @@ public class BlockchainServiceImpl implements IBlockchainService {
     @Override
     public long getBlockCount() {
         log.info("BlockchainServiceImpl|getBlockCount 开始处理");
-        String result = httpClient.post(config.walletUrl, config.rpcUser, "blockchain_get_block_count", new JSONArray());
+        String result =
+            httpClient.post(config.walletUrl, config.rpcUser, "blockchain_get_block_count", new JSONArray());
         JSONObject createTaskJson = JSONObject.parseObject(result);
         return createTaskJson.getLong("result");
     }
@@ -48,29 +49,29 @@ public class BlockchainServiceImpl implements IBlockchainService {
     @Override
     public JSONArray getBlock(long blockNum) {
         log.info("BlockchainServiceImpl|getBlock 开始处理[{}]", blockNum);
-        String result = httpClient.post(config.walletUrl, config.rpcUser, "blockchain_get_block", String.valueOf(blockNum));
+        String result =
+            httpClient.post(config.walletUrl, config.rpcUser, "blockchain_get_block", String.valueOf(blockNum));
         JSONObject createTaskJson = JSONObject.parseObject(result);
         return createTaskJson.getJSONObject("result").getJSONArray("user_transaction_ids");
     }
 
 
-
     /**
      * 需要判断交易类型，合约id，合约调用的方法和转账到的地址。
+     *
      * @param trxId 交易单号
-     * @return
      */
     @Override
-    public TransactionDTO getTransaction(long blockNum, String trxId){
+    public TransactionDTO getTransaction(long blockNum, String trxId) {
         log.info("BlockchainServiceImpl|getBlock 开始处理[{}]", trxId);
         Map<String, Object> map = new HashMap<>(2);
         String result = httpClient.post(config.walletUrl, config.rpcUser, "blockchain_get_transaction", trxId);
         JSONObject createTaskJson = JSONObject.parseObject(result);
         JSONObject operationJson = createTaskJson.getJSONArray("result")
-                                                .getJSONObject(1)
-                                                .getJSONObject("trx")
-                                                .getJSONArray("operations")
-                                                .getJSONObject(0);
+                                                 .getJSONObject(1)
+                                                 .getJSONObject("trx")
+                                                 .getJSONArray("operations")
+                                                 .getJSONObject(0);
         //判断交易类型
         String operationType = operationJson.getString("type");
         String s = operationJson.getString("result");
@@ -90,14 +91,16 @@ public class BlockchainServiceImpl implements IBlockchainService {
             createTaskJson.getJSONArray("result").getJSONObject(1).getJSONObject("trx").getString("result_trx_id");
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(StringUtils.isEmpty(resultTrxId) ? trxId : resultTrxId);
-        log.info("getTransaction|transaction_op_type|[blockId={}][trxId={}][result_trx_id={}]", blockNum, trxId, resultTrxId);
-        String resultSignee = httpClient.post(config.walletUrl, config.rpcUser, "blockchain_get_pretty_contract_transaction", jsonArray);
+        log.info("getTransaction|transaction_op_type|[blockId={}][trxId={}][result_trx_id={}]", blockNum, trxId,
+                 resultTrxId);
+        String resultSignee =
+            httpClient.post(config.walletUrl, config.rpcUser, "blockchain_get_pretty_contract_transaction", jsonArray);
         JSONObject resultJson2 = JSONObject.parseObject(resultSignee).getJSONObject("result");
         Date trxTime = dealTime(resultJson2.getString("timestamp"));
         JSONArray reserved = resultJson2.getJSONArray("reserved");
         String callAbi = reserved.size() >= 1 ? reserved.getString(0) : null;
         //没有方法名
-        if(StringUtils.isEmpty(callAbi)){
+        if (StringUtils.isEmpty(callAbi)) {
             return null;
         }
         jsonArray = new JSONArray();
@@ -122,7 +125,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
 
     @Override
     public String networkBroadcast(String message) {
-        return  httpClient.post(config.walletUrl, config.rpcUser, "network_broadcast_transaction", message);
+        return httpClient.post(config.walletUrl, config.rpcUser, "network_broadcast_transaction", message);
     }
 
     private void parseEventData(JSONObject result, JSONArray jsonArray1) {
@@ -139,12 +142,12 @@ public class BlockchainServiceImpl implements IBlockchainService {
         }
     }
 
-    private Date dealTime(String timestamp){
+    private Date dealTime(String timestamp) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             return format.parse(timestamp);
         } catch (ParseException e) {
-            log.error("dealTime|error|",e);
+            log.error("dealTime|error|", e);
             return null;
         }
     }

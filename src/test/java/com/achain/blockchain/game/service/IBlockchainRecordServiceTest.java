@@ -24,7 +24,7 @@ public class IBlockchainRecordServiceTest {
     private Config config;
 
     @Test
-    public void insert() throws Exception{
+    public void insert() throws Exception {
         BlockchainRecord blockchainRecord = new BlockchainRecord();
         blockchainRecord.setBlockNum(1L);
         blockchainRecord.setContractId("12321");
@@ -35,7 +35,7 @@ public class IBlockchainRecordServiceTest {
     }
 
     @Test
-    public void listAll() throws Exception{
+    public void listAll() throws Exception {
         EntityWrapper<BlockchainRecord> wrapper = new EntityWrapper<>();
         List<BlockchainRecord> list = blockchainService.selectList(wrapper);
         long blockCount = config.headerBlockCount;
@@ -43,9 +43,9 @@ public class IBlockchainRecordServiceTest {
     }
 
     @Test
-    public void selectMaxBlockNum() throws Exception{
+    public void selectMaxBlockNum() throws Exception {
         EntityWrapper<BlockchainRecord> wrapper = new EntityWrapper<>();
-        wrapper.orderBy("block_num",false);
+        wrapper.orderBy("block_num", false);
         BlockchainRecord blockchainRecord = blockchainService.selectOne(wrapper);
         System.out.println(23123);
     }
