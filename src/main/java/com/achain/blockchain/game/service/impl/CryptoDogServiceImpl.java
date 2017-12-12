@@ -165,7 +165,6 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
             blockchainDogOrder.setBeginTime(transactionDTO.getTrxTime());
             blockchainDogOrder.setEndTime(new Date(endTime));
             blockchainDogOrder.setTrxId(transactionDTO.getTrxId());
-            blockchainDogOrder.setErrorMessage(eventParam);
             blockchainDogOrderService.insert(blockchainDogOrder);
         }
     }
