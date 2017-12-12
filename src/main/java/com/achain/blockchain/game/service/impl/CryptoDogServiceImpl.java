@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import lombok.extern.slf4j.Slf4j;
@@ -95,6 +96,23 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         String eventType = transactionDTO.getEventType();
         String eventParam = transactionDTO.getEventParam();
         if (CryptoDogEventType.BID_SUCCESS.equals(eventType)) {
+            DogDTO dogDTO = JSON.parseObject(eventParam, DogDTO.class);
+            if(Objects.isNull(dogDTO)){
+                return;
+            }
+            List<BlockchainDogOrder> list =
+                blockchainDogOrderService.listByDogIdAndStatus(dogDTO.getId(), OrderStatus.ON);
+            if(list.size() == 0){
+                return;
+            }
+            BlockchainDogOrder blockchainDogOrder = list.get(0);
+            blockchainDogOrder.setStatus(OrderStatus.SUCCESS.getIntKey());
+            blockchainDogOrder.setBuyer(transactionDTO.getFromAddr());
+            blockchainDogOrder.setTransPrice(transactionDTO.getAmount());
+            blockchainDogOrderService.updateById(blockchainDogOrder);
+            BlockchainDogInfo dogInfo = blockchainDogInfoService.getByDogId(dogDTO.getId());
+            dogInfo.setOwner(blockchainDogOrder.getBuyer());
+            blockchainDogInfoService.updateById(dogInfo);
 
         } else {
 
@@ -152,6 +170,26 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         }
     }
 
+
+
+    @Override
+    public void cancelAuction(TransactionDTO transactionDTO) {
+        log.info("cancelAuction|transactionDTO={}", transactionDTO);
+        String eventType = transactionDTO.getEventType();
+        String eventParam = transactionDTO.getEventParam();
+        if (CryptoDogEventType.CANCEL_AUCTION_SUCCESS.equals(eventType)) {
+            int tokenId = Integer.parseInt(eventParam);
+            List<BlockchainDogOrder> list =
+                blockchainDogOrderService.listByDogIdAndStatus(tokenId, OrderStatus.ON);
+            if(list.size() == 0){
+                return;
+            }
+            BlockchainDogOrder blockchainDogOrder = list.get(0);
+            blockchainDogOrder.setStatus(OrderStatus.CANCEL.getIntKey());
+            blockchainDogOrderService.updateById(blockchainDogOrder);
+        }
+    }
+
     private AuctionDTO getAuction(String[] callParams) {
         try {
             AuctionDTO auctionDTO = new AuctionDTO();
@@ -170,17 +208,5 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
             log.error("addAuction|error|", e);
         }
         return null;
-    }
-
-    @Override
-    public void cancelAuction(TransactionDTO transactionDTO) {
-        log.info("cancelAuction|transactionDTO={}", transactionDTO);
-        String eventType = transactionDTO.getEventType();
-        String eventParam = transactionDTO.getEventParam();
-        if (CryptoDogEventType.CANCEL_AUCTION_SUCCESS.equals(eventType)) {
-
-        } else {
-
-        }
     }
 }

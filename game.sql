@@ -55,13 +55,12 @@ CREATE TABLE `blockchain_dog_order` (
   `ending_price` BIGINT UNSIGNED COMMENT '买卖狗的结束价格',
   `trans_price` BIGINT DEFAULT 0 COMMENT '成交价格',
   `status` TINYINT NOT NULL COMMENT '订单状态,0-进行中,1-交易成功,2-交易取消,3-交易失效,4-交易失败',
-  `error_message` VARCHAR(255) DEFAULT NULL COMMENT '失败原因',
   `trx_id` VARCHAR(70) DEFAULT NULL COMMENT '链上的交易单号',
   `begin_time` TIMESTAMP NOT NULL COMMENT '订单开始时间',
   `end_time` DATETIME NOT NULL COMMENT '订单结束时间',
   `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id4`),
+  PRIMARY KEY (`id`),
   KEY `idx_trx_id`(`trx_id`),
   KEY `idx_dog_id`(`dog_id`),
   UNIQUE KEY (`order_id`)
@@ -81,7 +80,6 @@ CREATE TABLE `blockchain_dog_meting_order` (
   `ending_price` BIGINT UNSIGNED COMMENT '结束价格',
   `trans_price` BIGINT DEFAULT 0 COMMENT '成交价格',
   `status` TINYINT NOT NULL COMMENT '订单状态,0-进行中,1-交易成功,2-交易取消,3-交易失效,4-交易失败',
-  `error_message` VARCHAR(255) DEFAULT NULL COMMENT '失败原因',
   `trx_id` VARCHAR(70) DEFAULT NULL COMMENT '链上的交易单号',
   `begin_time` TIMESTAMP NOT NULL COMMENT '订单开始时间',
   `end_time` DATETIME NOT NULL COMMENT '订单结束时间',
@@ -95,6 +93,20 @@ CREATE TABLE `blockchain_dog_meting_order` (
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COMMENT ='加密狗繁衍订单表';
+
+CREATE TABLE `blockchain_dog_user_order` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `trx_id` VARCHAR(70) DEFAULT NULL COMMENT '链上的交易单号',
+  `status` TINYINT NOT NULL COMMENT '订单状态,0-进行中,1-交易成功,4-交易失败',
+  `error_message` VARCHAR(255) DEFAULT NULL COMMENT '错误信息',
+  `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_trx_id`(`trx_id`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COMMENT ='加密狗用户订单表';
 
 
 

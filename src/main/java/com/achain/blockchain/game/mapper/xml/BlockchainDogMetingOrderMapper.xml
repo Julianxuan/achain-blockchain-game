@@ -16,7 +16,6 @@
     <result column="begin_time" property="beginTime"/>
     <result column="end_time" property="endTime"/>
     <result column="end_time" property="endTime"/>
-    <result column="error_message" property="errorMessage"/>
     <result column="create_time" property="createTime"/>
     <result column="update_time" property="updateTime"/>
   </resultMap>
@@ -25,7 +24,7 @@
   <sql id="Base_Column_List">
     id,dog_id AS dogId,order_id AS orderId,seller,buyer,starting_price AS startingPrice,
     ending_price AS endingPrice,trans_price AS transPrice,status,trx_id AS trxId,
-    begin_time AS beginTime,end_time AS endTime,error_message,
+    begin_time AS beginTime,end_time AS endTime,
     create_time AS createTime,udpateTime AS updateTime
   </sql>
 </mapper>

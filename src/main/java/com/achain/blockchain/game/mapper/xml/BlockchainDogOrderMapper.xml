@@ -12,7 +12,6 @@
     <result column="ending_price" property="endingPrice"/>
     <result column="trans_price" property="transPrice"/>
     <result column="status" property="status"/>
-    <result column="error_message" property="errorMessage"/>
     <result column="trx_id" property="trxId"/>
     <result column="end_time" property="endTime"/>
     <result column="begin_time" property="beginTime"/>
@@ -24,7 +23,7 @@
   <!-- 通用查询结果列-->
   <sql id="Base_Column_List">
     id,dog_id AS dogId,order_id AS orderId,seller,buyer,starting_price AS startingPrice,
-    ending_price AS endingPrice,trans_price AS transPrice,status,error_message AS errorMessage,
+    ending_price AS endingPrice,trans_price AS transPrice,status,
     trx_id AS trxId,end_time AS endTime,begin_time AS beginTime,
     create_time AS createTime,udpateTime AS updateTime
   </sql>
