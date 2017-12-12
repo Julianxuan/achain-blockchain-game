@@ -61,7 +61,7 @@ CREATE TABLE `blockchain_dog_order` (
   `end_time` DATETIME NOT NULL COMMENT '订单结束时间',
   `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`id4`),
   KEY `idx_trx_id`(`trx_id`),
   KEY `idx_dog_id`(`dog_id`),
   UNIQUE KEY (`order_id`)

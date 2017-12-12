@@ -94,6 +94,8 @@ public class BlockchainServiceImpl implements IBlockchainService {
         String resultSignee =
             httpClient.post(config.walletUrl, config.rpcUser, "blockchain_get_pretty_contract_transaction", jsonArray);
         JSONObject resultJson2 = JSONObject.parseObject(resultSignee).getJSONObject("result");
+        //和广播返回的统一
+        String origTrxId = resultJson2.getString("orig_trx_id");
         Date trxTime = dealTime(resultJson2.getString("timestamp"));
         JSONArray reserved = resultJson2.getJSONArray("reserved");
         JSONObject temp = resultJson2.getJSONObject("to_contract_ledger_entry");
@@ -120,7 +122,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
         parseEventData(resultJson, jsonArray1);
         TransactionDTO transactionDTO = new TransactionDTO();
         transactionDTO.setContractId(contract);
-        transactionDTO.setTrxId(trxId);
+        transactionDTO.setTrxId(origTrxId);
         transactionDTO.setEventParam(resultJson.getString("event_param"));
         transactionDTO.setEventType(resultJson.getString("event_type"));
         transactionDTO.setBlockNum(blockNum);
