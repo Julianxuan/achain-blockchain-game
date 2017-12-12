@@ -81,10 +81,10 @@ public class BlockchainServiceImpl implements IBlockchainService {
         JSONObject operationData = operationJson.getJSONObject("data");
         log.info("BlockchainServiceImpl|operationData={}",operationData);
         //不是游戏的合约id就忽略
-        String contract = operationData.getString("contract").replace("ACT", "CON");
-        if (!config.contractId.equals(contract)) {
-            return null;
-        }
+//        String contract = operationData.getString("contract").replace("ACT", "CON");
+//        if (!config.contractId.equals(contract)) {
+//            return null;
+//        }
         String resultTrxId =
             createTaskJson.getJSONArray("result").getJSONObject(1).getJSONObject("trx").getString("result_trx_id");
         JSONArray jsonArray = new JSONArray();
@@ -97,6 +97,11 @@ public class BlockchainServiceImpl implements IBlockchainService {
         Date trxTime = dealTime(resultJson2.getString("timestamp"));
         JSONArray reserved = resultJson2.getJSONArray("reserved");
         JSONObject temp = resultJson2.getJSONObject("to_contract_ledger_entry");
+        String contract = temp.getString("to_account");
+        //不是游戏的合约id就忽略
+        if (!config.contractId.equals(contract)) {
+            return null;
+        }
         String fromAddr = temp.getString("from_account");
         Long amount = temp.getJSONObject("amount").getLong("amount");
         String callAbi = reserved.size() >= 1 ? reserved.getString(0) : null;
