@@ -18,7 +18,8 @@ public class BlockchainDogMetingOrder implements Serializable{
     private static final long serialVersionUID = 6755003004551812379L;
 
     private Integer id;
-    private Integer dogId;
+    private Integer sellerDogId;
+    private Integer buyerDogId;
     private String orderId;
     private String seller;
     private String buyer;

@@ -4,7 +4,8 @@
 
   <resultMap id="BaseResultMap" type="com.achain.blockchain.game.domain.entity.BlockchainDogMetingOrder">
     <id column="id" property="id"/>
-    <result column="dog_id" property="dogId"/>
+    <result column="seller_dog_id" property="sellerDogId"/>
+    <result column="buyer_dog_id" property="buyerDogId"/>
     <result column="order_id" property="orderId"/>
     <result column="seller" property="seller"/>
     <result column="buyer" property="buyer"/>
@@ -22,7 +23,7 @@
 
   <!-- 通用查询结果列-->
   <sql id="Base_Column_List">
-    id,dog_id AS dogId,order_id AS orderId,seller,buyer,starting_price AS startingPrice,
+    id,seller_dog_id AS sellerDogId,buyer_dog_id AS buyerDogId,order_id AS orderId,seller,buyer,starting_price AS startingPrice,
     ending_price AS endingPrice,trans_price AS transPrice,status,trx_id AS trxId,
     begin_time AS beginTime,end_time AS endTime,
     create_time AS createTime,udpateTime AS updateTime

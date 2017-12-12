@@ -4,20 +4,22 @@ import com.achain.blockchain.game.conf.Config;
 import com.achain.blockchain.game.domain.consts.CryptoDogEventType;
 import com.achain.blockchain.game.domain.dto.AuctionDTO;
 import com.achain.blockchain.game.domain.dto.DogDTO;
+import com.achain.blockchain.game.domain.dto.MatingDTO;
 import com.achain.blockchain.game.domain.dto.TransactionDTO;
 import com.achain.blockchain.game.domain.dto.UserOrderDTO;
 import com.achain.blockchain.game.domain.entity.BlockchainDogInfo;
+import com.achain.blockchain.game.domain.entity.BlockchainDogMetingOrder;
 import com.achain.blockchain.game.domain.entity.BlockchainDogOrder;
 import com.achain.blockchain.game.domain.enums.ContractGameMethod;
 import com.achain.blockchain.game.domain.enums.OrderStatus;
 import com.achain.blockchain.game.service.IBlockchainDogInfoService;
+import com.achain.blockchain.game.service.IBlockchainDogMetingOrderService;
 import com.achain.blockchain.game.service.IBlockchainDogOrderService;
 import com.achain.blockchain.game.service.IBlockchainDogUserOrderService;
 import com.achain.blockchain.game.service.ICryptoDogService;
 import com.achain.blockchain.game.utils.SymmetricEncoder;
 import com.alibaba.fastjson.JSON;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +49,8 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
     private IBlockchainDogOrderService blockchainDogOrderService;
     @Autowired
     private IBlockchainDogUserOrderService blockchainDogUserOrderService;
+    @Autowired
+    private IBlockchainDogMetingOrderService blockchainDogMetingOrderService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -180,31 +184,31 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
                                                     .build();
             blockchainDogUserOrderService.updateTrx(userOrderDTO);
         } else {
-            String apiParams = transactionDTO.getApiParams();
-            if (StringUtils.isEmpty(apiParams)) {
-                return;
-            }
-            String[] callParams = apiParams.split("\\|");
-            Integer expectLength = 4;
-            if (callParams.length < expectLength) {
-                return;
-            }
-            AuctionDTO auctionDTO = getAuction(callParams);
-            if (Objects.isNull(auctionDTO)) {
-                return;
-            }
-            long endTime = transactionDTO.getTrxTime().getTime() + auctionDTO.getDuration() * PER_BLOCK_TIME;
-            BlockchainDogOrder blockchainDogOrder = new BlockchainDogOrder();
-            blockchainDogOrder.setSeller(transactionDTO.getFromAddr());
-            blockchainDogOrder.setDogId(auctionDTO.getTokenId());
-            blockchainDogOrder.setStatus(OrderStatus.FAIL.getIntKey());
-            blockchainDogOrder.setOrderId(auctionDTO.getTrx_id());
-            blockchainDogOrder.setStartingPrice(auctionDTO.getStartingPrice());
-            blockchainDogOrder.setEndingPrice(auctionDTO.getEndingPrice());
-            blockchainDogOrder.setBeginTime(transactionDTO.getTrxTime());
-            blockchainDogOrder.setEndTime(new Date(endTime));
-            blockchainDogOrder.setTrxId(transactionDTO.getTrxId());
-            blockchainDogOrderService.insert(blockchainDogOrder);
+//            String apiParams = transactionDTO.getApiParams();
+//            if (StringUtils.isEmpty(apiParams)) {
+//                return;
+//            }
+//            String[] callParams = apiParams.split("\\|");
+//            Integer expectLength = 4;
+//            if (callParams.length < expectLength) {
+//                return;
+//            }
+//            AuctionDTO auctionDTO = getAuction(callParams);
+//            if (Objects.isNull(auctionDTO)) {
+//                return;
+//            }
+//            long endTime = transactionDTO.getTrxTime().getTime() + auctionDTO.getDuration() * PER_BLOCK_TIME;
+//            BlockchainDogOrder blockchainDogOrder = new BlockchainDogOrder();
+//            blockchainDogOrder.setSeller(transactionDTO.getFromAddr());
+//            blockchainDogOrder.setDogId(auctionDTO.getTokenId());
+//            blockchainDogOrder.setStatus(OrderStatus.FAIL.getIntKey());
+//            blockchainDogOrder.setOrderId(auctionDTO.getTrx_id());
+//            blockchainDogOrder.setStartingPrice(auctionDTO.getStartingPrice());
+//            blockchainDogOrder.setEndingPrice(auctionDTO.getEndingPrice());
+//            blockchainDogOrder.setBeginTime(transactionDTO.getTrxTime());
+//            blockchainDogOrder.setEndTime(new Date(endTime));
+//            blockchainDogOrder.setTrxId(transactionDTO.getTrxId());
+//            blockchainDogOrderService.insert(blockchainDogOrder);
             //更新订单
             UserOrderDTO userOrderDTO = UserOrderDTO.builder()
                                                     .trxId(transactionDTO.getTrxId())
@@ -285,17 +289,112 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         log.info("addMatingTransaction|transactionDTO={}", transactionDTO);
         String eventType = transactionDTO.getEventType();
         String eventParam = transactionDTO.getEventParam();
+        if (CryptoDogEventType.ADD_MATING_SUCCESS.equals(eventType)) {
+            AuctionDTO auctionDTO = JSON.parseObject(eventParam, AuctionDTO.class);
+            if (Objects.nonNull(auctionDTO)) {
+                long endTime = transactionDTO.getTrxTime().getTime() + auctionDTO.getDuration() * PER_BLOCK_TIME;
+                BlockchainDogMetingOrder blockchainDogMetingOrder = new BlockchainDogMetingOrder();
+                blockchainDogMetingOrder.setSeller(transactionDTO.getFromAddr());
+                blockchainDogMetingOrder.setSellerDogId(auctionDTO.getTokenId());
+                blockchainDogMetingOrder.setStatus(OrderStatus.ON.getIntKey());
+                blockchainDogMetingOrder.setOrderId(auctionDTO.getTrx_id());
+                blockchainDogMetingOrder.setStartingPrice(auctionDTO.getStartingPrice());
+                blockchainDogMetingOrder.setEndingPrice(auctionDTO.getEndingPrice());
+                blockchainDogMetingOrder.setBeginTime(transactionDTO.getTrxTime());
+                blockchainDogMetingOrder.setEndTime(new Date(endTime));
+                blockchainDogMetingOrder.setTrxId(transactionDTO.getTrxId());
+                blockchainDogMetingOrderService.insert(blockchainDogMetingOrder);
+
+                UserOrderDTO userOrderDTO = UserOrderDTO.builder()
+                                                        .trxId(transactionDTO.getTrxId())
+                                                        .status(OrderStatus.SUCCESS)
+                                                        .method(ContractGameMethod.MATING_ADD_AUCTION.getValue())
+                                                        .build();
+                blockchainDogUserOrderService.updateTrx(userOrderDTO);
+            }
+        } else {
+            UserOrderDTO userOrderDTO = UserOrderDTO.builder()
+                                                    .trxId(transactionDTO.getTrxId())
+                                                    .status(OrderStatus.FAIL)
+                                                    .method(ContractGameMethod.MATING_ADD_AUCTION.getValue())
+                                                    .errorMessage(eventParam)
+                                                    .build();
+            blockchainDogUserOrderService.updateTrx(userOrderDTO);
+
+        }
 
     }
 
     @Override
     public void cancelMatingTransaction(TransactionDTO transactionDTO) {
+        log.info("cancelMatingTransaction|transactionDTO={}", transactionDTO);
+        String eventType = transactionDTO.getEventType();
+        String eventParam = transactionDTO.getEventParam();
+        if (CryptoDogEventType.CANCEL_MATING_SUCCESS.equals(eventType)) {
+            int tokenId = Integer.parseInt(eventParam);
+            List<BlockchainDogMetingOrder> list =
+                blockchainDogMetingOrderService.listByDogIdAndStatus(tokenId, OrderStatus.ON);
+            if (list.size() == 0) {
+                return;
+            }
+            BlockchainDogMetingOrder blockchainDogMetingOrder = list.get(0);
+            blockchainDogMetingOrder.setStatus(OrderStatus.CANCEL.getIntKey());
+            blockchainDogMetingOrderService.updateById(blockchainDogMetingOrder);
 
+            UserOrderDTO userOrderDTO = UserOrderDTO.builder()
+                                                    .trxId(transactionDTO.getTrxId())
+                                                    .status(OrderStatus.SUCCESS)
+                                                    .method(ContractGameMethod.MATING_CANCEL_AUCTION.getValue())
+                                                    .build();
+            blockchainDogUserOrderService.updateTrx(userOrderDTO);
+        } else {
+            UserOrderDTO userOrderDTO = UserOrderDTO.builder()
+                                                    .trxId(transactionDTO.getTrxId())
+                                                    .status(OrderStatus.FAIL)
+                                                    .method(ContractGameMethod.MATING_CANCEL_AUCTION.getValue())
+                                                    .errorMessage(eventParam)
+                                                    .build();
+            blockchainDogUserOrderService.updateTrx(userOrderDTO);
+        }
     }
 
     @Override
     public void matingTransfer(TransactionDTO transactionDTO) {
+        log.info("matingTransfer|transactionDTO={}", transactionDTO);
+        String eventType = transactionDTO.getEventType();
+        String eventParam = transactionDTO.getEventParam();
+        if (CryptoDogEventType.CANCEL_MATING_SUCCESS.equals(eventType)) {
+            MatingDTO matingDTO = JSON.parseObject(eventParam, MatingDTO.class);
+            if(Objects.isNull(matingDTO)){
+                return;
+            }
+            List<BlockchainDogMetingOrder> list =
+                blockchainDogMetingOrderService.listByDogIdAndStatus(matingDTO.getTo_dog_id(), OrderStatus.ON);
+            if (list.size() == 0) {
+                return;
+            }
+            BlockchainDogMetingOrder blockchainDogMetingOrder = list.get(0);
+            blockchainDogMetingOrder.setBuyer(matingDTO.getFrom_address());
+            blockchainDogMetingOrder.setBuyerDogId(matingDTO.getFrom_dog_id());
+            blockchainDogMetingOrder.setStatus(OrderStatus.SUCCESS.getIntKey());
+            blockchainDogMetingOrder.setTransPrice(matingDTO.getAmount());
+            blockchainDogMetingOrderService.updateById(blockchainDogMetingOrder);
 
+            UserOrderDTO userOrderDTO = UserOrderDTO.builder()
+                                                    .trxId(transactionDTO.getTrxId())
+                                                    .status(OrderStatus.SUCCESS)
+                                                    .method(ContractGameMethod.MATING_BID.getValue())
+                                                    .build();
+            blockchainDogUserOrderService.updateTrx(userOrderDTO);
+        }else {
+            UserOrderDTO userOrderDTO = UserOrderDTO.builder()
+                                                    .trxId(transactionDTO.getTrxId())
+                                                    .status(OrderStatus.FAIL)
+                                                    .method(ContractGameMethod.MATING_BID.getValue())
+                                                    .errorMessage(eventParam)
+                                                    .build();
+            blockchainDogUserOrderService.updateTrx(userOrderDTO);
+        }
     }
 
     private AuctionDTO getAuction(String[] callParams) {

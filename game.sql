@@ -72,8 +72,9 @@ CREATE TABLE `blockchain_dog_order` (
 
 CREATE TABLE `blockchain_dog_meting_order` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `dog_id` INT(11) UNSIGNED NOT NULL COMMENT '繁衍加密狗的编号',
-  `order_id` VARCHAR(256) NOT NULL COMMENT '挂单订单号',
+ `order_id` VARCHAR(256) NOT NULL COMMENT '挂单订单号',
+  `seller_dog_id` INT(11) UNSIGNED NOT NULL COMMENT '配种狗的编号',
+  `buyer_dog_id` INT(11) UNSIGNED NOT NULL COMMENT '进行配种狗的编号',
   `seller` VARCHAR(70) NOT NULL COMMENT '挂单人的地址',
   `buyer` VARCHAR(70) DEFAULT NULL COMMENT '买方的地址',
   `starting_price` BIGINT UNSIGNED COMMENT '起始价格',
@@ -87,7 +88,8 @@ CREATE TABLE `blockchain_dog_meting_order` (
   `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_trx_id`(`trx_id`),
-  KEY `idx_dog_id`(`dog_id`),
+  KEY `idx_seller_dog_id`(`seller_dog_id`),
+  KEY `idx_buyer_dog_id`(`buyer_dog_id`),
   UNIQUE KEY (`order_id`)
 )
   ENGINE = InnoDB
