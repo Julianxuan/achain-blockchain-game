@@ -82,7 +82,7 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
 
             long endTime = transactionDTO.getTrxTime().getTime() + auctionDTO.getDuration() * PER_BLOCK_TIME;
             BlockchainDogOrder blockchainDogOrder = new BlockchainDogOrder();
-            blockchainDogOrder.setSeller(transactionDTO.getFromAddr());
+            blockchainDogOrder.setSeller(split[2]);
             blockchainDogOrder.setDogId(auctionDTO.getTokenId());
             blockchainDogOrder.setStatus(OrderStatus.ON.getIntKey());
             blockchainDogOrder.setOrderId(auctionDTO.getTrx_id());
