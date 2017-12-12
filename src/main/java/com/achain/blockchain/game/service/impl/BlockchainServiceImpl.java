@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -64,7 +62,6 @@ public class BlockchainServiceImpl implements IBlockchainService {
     @Override
     public TransactionDTO getTransaction(long blockNum, String trxId) {
         log.info("BlockchainServiceImpl|getBlock 开始处理[{}]", trxId);
-        Map<String, Object> map = new HashMap<>(2);
         String result = httpClient.post(config.walletUrl, config.rpcUser, "blockchain_get_transaction", trxId);
         JSONObject createTaskJson = JSONObject.parseObject(result);
         JSONObject operationJson = createTaskJson.getJSONArray("result")
@@ -82,6 +79,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
         }
 
         JSONObject operationData = operationJson.getJSONObject("data");
+        log.info("BlockchainServiceImpl|operationData={}",operationData);
         //不是游戏的合约id就忽略
         String contract = operationData.getString("contract").replace("ACT", "CON");
         if (!config.contractId.equals(contract)) {

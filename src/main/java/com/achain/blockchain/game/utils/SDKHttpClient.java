@@ -60,11 +60,11 @@ public class SDKHttpClient {
         HttpPost httppost = null;
         String result = null;
         try {
-            String rpc_auth = (int) ((Math.random() * 9 + 1) * 100000) + "" + Base64.encodeBytes(key.getBytes());
+            String rpcAuth = (int) ((Math.random() * 9 + 1) * 100000) + "" + Base64.encodeBytes(key.getBytes());
             httppost = new HttpPost(url);
             httppost.setEntity(new StringEntity(entity, Charset.forName("UTF-8")));
             httppost.setHeader("Content-type", "application/json");
-            httppost.setHeader("Authorization", rpc_auth);
+            httppost.setHeader("Authorization", rpcAuth);
             log.info("【SDKHttpClient】｜POST开始：url=[{}]", url);
             CloseableHttpResponse response = httpclient.execute(httppost);
             if (null != response) {
