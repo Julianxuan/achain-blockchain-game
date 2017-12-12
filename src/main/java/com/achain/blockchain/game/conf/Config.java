@@ -36,6 +36,9 @@ public class Config {
     @Value("${rpc_user}")
     public String rpcUser;
 
+    @Value("${encodeRules}")
+    public String encodeRules;
+
 
     public long headerBlockCount;
 

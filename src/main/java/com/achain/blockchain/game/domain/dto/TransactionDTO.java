@@ -29,4 +29,8 @@ public class TransactionDTO implements Serializable {
      * 调用方法名
      */
     private String callAbi;
+
+    private String fromAddr;
+
+    private Long amount;
 }

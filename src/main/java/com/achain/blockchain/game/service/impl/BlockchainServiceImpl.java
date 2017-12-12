@@ -77,7 +77,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
         String s = operationJson.getString("result");
         System.out.println(s);
         //不是合约调用就忽略
-        if (!"call_contract_op_type".equals(operationType)) {
+        if (!"transaction_op_type".equals(operationType)) {
             return null;
         }
 
@@ -98,6 +98,9 @@ public class BlockchainServiceImpl implements IBlockchainService {
         JSONObject resultJson2 = JSONObject.parseObject(resultSignee).getJSONObject("result");
         Date trxTime = dealTime(resultJson2.getString("timestamp"));
         JSONArray reserved = resultJson2.getJSONArray("reserved");
+        JSONObject temp = resultJson2.getJSONObject("to_contract_ledger_entry");
+        String fromAddr = temp.getString("from_account");
+        Long amount = temp.getJSONObject("amount").getLong("amount");
         String callAbi = reserved.size() >= 1 ? reserved.getString(0) : null;
         //没有方法名
         if (StringUtils.isEmpty(callAbi)) {
@@ -119,6 +122,8 @@ public class BlockchainServiceImpl implements IBlockchainService {
         transactionDTO.setBlockNum(blockNum);
         transactionDTO.setTrxTime(trxTime);
         transactionDTO.setCallAbi(callAbi);
+        transactionDTO.setFromAddr(fromAddr);
+        transactionDTO.setAmount(amount);
         return transactionDTO;
     }
 

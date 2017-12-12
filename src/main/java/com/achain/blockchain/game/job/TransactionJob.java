@@ -3,7 +3,9 @@ package com.achain.blockchain.game.job;
 
 import com.achain.blockchain.game.conf.Config;
 import com.achain.blockchain.game.domain.dto.TransactionDTO;
+import com.achain.blockchain.game.domain.entity.BlockchainRecord;
 import com.achain.blockchain.game.domain.enums.ContractGameMethod;
+import com.achain.blockchain.game.service.IBlockchainRecordService;
 import com.achain.blockchain.game.service.IBlockchainService;
 import com.achain.blockchain.game.service.ICryptoDogService;
 import com.alibaba.fastjson.JSONArray;
@@ -29,6 +31,9 @@ public class TransactionJob {
     private final IBlockchainService blockchainService;
 
     private final ICryptoDogService cryptoDogService;
+
+    @Autowired
+    private IBlockchainRecordService blockchainRecordService;
 
 
     @Autowired
@@ -56,12 +61,26 @@ public class TransactionJob {
             for (Object transaction : transactionList) {
                 TransactionDTO transactionDTO = blockchainService.getTransaction(blockCount, (String) transaction);
                 if (Objects.nonNull(transactionDTO)) {
+                    saveTransaction(transactionDTO);
                     dealRpcReturnData(transactionDTO);
                 }
             }
         }
         config.headerBlockCount = headerBlockCount;
         log.info("doTransactionJob|结束|nowHeaderBlockNum={}", config.headerBlockCount);
+    }
+
+    /**
+     * 扫块数据入库
+     * @param transactionDTO 数据
+     */
+    private void saveTransaction(TransactionDTO transactionDTO) {
+        BlockchainRecord blockchainRecord = new BlockchainRecord();
+        blockchainRecord.setTrxId(transactionDTO.getTrxId());
+        blockchainRecord.setTrxTime(transactionDTO.getTrxTime());
+        blockchainRecord.setContractId(transactionDTO.getContractId());
+        blockchainRecord.setBlockNum(transactionDTO.getBlockNum());
+        blockchainRecordService.insert(blockchainRecord);
     }
 
     /**

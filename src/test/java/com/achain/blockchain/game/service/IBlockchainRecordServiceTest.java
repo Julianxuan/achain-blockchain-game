@@ -47,6 +47,7 @@ public class IBlockchainRecordServiceTest {
         EntityWrapper<BlockchainRecord> wrapper = new EntityWrapper<>();
         wrapper.orderBy("block_num", false);
         BlockchainRecord blockchainRecord = blockchainService.selectOne(wrapper);
+        String walletUrl = config.walletUrl;
         System.out.println(23123);
     }
 }
