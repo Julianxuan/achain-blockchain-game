@@ -10,6 +10,7 @@ import com.achain.blockchain.game.domain.entity.BlockchainDogOrder;
 import com.achain.blockchain.game.domain.enums.OrderStatus;
 import com.achain.blockchain.game.service.IBlockchainDogInfoService;
 import com.achain.blockchain.game.service.IBlockchainDogOrderService;
+import com.achain.blockchain.game.service.IBlockchainDogUserOrderService;
 import com.achain.blockchain.game.service.ICryptoDogService;
 import com.achain.blockchain.game.utils.SymmetricEncoder;
 import com.alibaba.fastjson.JSON;
@@ -42,6 +43,8 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
     private IBlockchainDogInfoService blockchainDogInfoService;
     @Autowired
     private IBlockchainDogOrderService blockchainDogOrderService;
+    @Autowired
+    private IBlockchainDogUserOrderService blockchainDogUserOrderService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -87,7 +90,12 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
             blockchainDogOrder.setEndTime(new Date(endTime));
             blockchainDogOrder.setTrxId(transactionDTO.getTrxId());
             blockchainDogOrderService.insert(blockchainDogOrder);
+
+            blockchainDogUserOrderService.updateTrx(transactionDTO.getTrxId(), OrderStatus.SUCCESS, null);
+        } else {
+            blockchainDogUserOrderService.updateTrx(transactionDTO.getTrxId(), OrderStatus.FAIL, eventParam);
         }
+
     }
 
     @Override
@@ -97,12 +105,12 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         String eventParam = transactionDTO.getEventParam();
         if (CryptoDogEventType.BID_SUCCESS.equals(eventType)) {
             DogDTO dogDTO = JSON.parseObject(eventParam, DogDTO.class);
-            if(Objects.isNull(dogDTO)){
+            if (Objects.isNull(dogDTO)) {
                 return;
             }
             List<BlockchainDogOrder> list =
                 blockchainDogOrderService.listByDogIdAndStatus(dogDTO.getId(), OrderStatus.ON);
-            if(list.size() == 0){
+            if (list.size() == 0) {
                 return;
             }
             BlockchainDogOrder blockchainDogOrder = list.get(0);
@@ -114,9 +122,9 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
             dogInfo.setOwner(blockchainDogOrder.getBuyer());
             blockchainDogInfoService.updateById(dogInfo);
 
+            blockchainDogUserOrderService.updateTrx(transactionDTO.getTrxId(), OrderStatus.SUCCESS, null);
         } else {
-
-
+            blockchainDogUserOrderService.updateTrx(transactionDTO.getTrxId(), OrderStatus.FAIL, eventParam);
         }
     }
 
@@ -140,6 +148,8 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
             blockchainDogOrder.setEndTime(new Date(endTime));
             blockchainDogOrder.setTrxId(transactionDTO.getTrxId());
             blockchainDogOrderService.insert(blockchainDogOrder);
+
+            blockchainDogUserOrderService.updateTrx(transactionDTO.getTrxId(), OrderStatus.SUCCESS, null);
         } else {
             String apiParams = transactionDTO.getApiParams();
             if (StringUtils.isEmpty(apiParams)) {
@@ -166,9 +176,10 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
             blockchainDogOrder.setEndTime(new Date(endTime));
             blockchainDogOrder.setTrxId(transactionDTO.getTrxId());
             blockchainDogOrderService.insert(blockchainDogOrder);
+            //更新订单
+            blockchainDogUserOrderService.updateTrx(transactionDTO.getTrxId(), OrderStatus.FAIL, eventParam);
         }
     }
-
 
 
     @Override
@@ -180,12 +191,16 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
             int tokenId = Integer.parseInt(eventParam);
             List<BlockchainDogOrder> list =
                 blockchainDogOrderService.listByDogIdAndStatus(tokenId, OrderStatus.ON);
-            if(list.size() == 0){
+            if (list.size() == 0) {
                 return;
             }
             BlockchainDogOrder blockchainDogOrder = list.get(0);
             blockchainDogOrder.setStatus(OrderStatus.CANCEL.getIntKey());
             blockchainDogOrderService.updateById(blockchainDogOrder);
+
+            blockchainDogUserOrderService.updateTrx(transactionDTO.getTrxId(), OrderStatus.SUCCESS, null);
+        }else {
+            blockchainDogUserOrderService.updateTrx(transactionDTO.getTrxId(), OrderStatus.FAIL, eventParam);
         }
     }
 

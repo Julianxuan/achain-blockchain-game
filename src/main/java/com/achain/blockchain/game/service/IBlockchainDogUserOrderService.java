@@ -1,8 +1,27 @@
 package com.achain.blockchain.game.service;
 
+import com.achain.blockchain.game.domain.entity.BlockchainDogUserOrder;
+import com.achain.blockchain.game.domain.enums.OrderStatus;
+import com.baomidou.mybatisplus.service.IService;
+
 /**
  * @author yujianjian
  * @since 2017-12-12 下午7:47
  */
-public interface IBlockchainDogUserOrderService {
+public interface IBlockchainDogUserOrderService extends IService<BlockchainDogUserOrder> {
+
+    /**
+     * 根据trxId获取订单信息
+     * @param trxId 链上订单号
+     * @return 订单信息
+     */
+    BlockchainDogUserOrder getByTrxId(String trxId);
+
+    /**
+     * 更新订单
+     * @param trxId　订单号
+     * @param orderStatus 订单状态
+     * @param errorMessage 错误信息
+     */
+    void updateTrx(String trxId, OrderStatus orderStatus, String errorMessage);
 }
