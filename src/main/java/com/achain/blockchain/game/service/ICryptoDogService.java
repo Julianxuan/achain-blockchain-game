@@ -36,4 +36,10 @@ public interface ICryptoDogService {
      * @param transactionDTO 原始数据
      */
     void cancelAuction(TransactionDTO transactionDTO);
+
+    /**
+     * 赠送加密狗方法
+     * @param transactionDTO 原始数据
+     */
+    void gift(TransactionDTO transactionDTO);
 }

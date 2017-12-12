@@ -21,4 +21,9 @@ public class CryptoDogEventType {
     public static final String CANCEL_AUCTION_SUCCESS = "cancelAuction_success";
 
     public static final String CANCEL_AUCTION_FAIL = "cancelAuction_fail";
+
+    public static final String GIFT_SUCCESS = "gift_success";
+
+    public static final String GIFT_FAIL = "gift_fail";
+
 }

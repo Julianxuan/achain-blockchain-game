@@ -250,6 +250,36 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         }
     }
 
+    @Override
+    public void gift(TransactionDTO transactionDTO) {
+        log.info("gift|transactionDTO={}", transactionDTO);
+        String eventType = transactionDTO.getEventType();
+        String eventParam = transactionDTO.getEventParam();
+        if (CryptoDogEventType.GIFT_SUCCESS.equals(eventType)) {
+            DogDTO dogDTO = JSON.parseObject(eventParam, DogDTO.class);
+            if (Objects.nonNull(dogDTO)) {
+                String newOwner = dogDTO.getOwner();
+                BlockchainDogInfo dogInfo = blockchainDogInfoService.getByDogId(dogDTO.getId());
+                dogInfo.setOwner(newOwner);
+                blockchainDogInfoService.updateById(dogInfo);
+                UserOrderDTO userOrderDTO = UserOrderDTO.builder()
+                                                        .trxId(transactionDTO.getTrxId())
+                                                        .status(OrderStatus.SUCCESS)
+                                                        .method(ContractGameMethod.GIFT.getValue())
+                                                        .build();
+                blockchainDogUserOrderService.updateTrx(userOrderDTO);
+            }
+        } else {
+            UserOrderDTO userOrderDTO = UserOrderDTO.builder()
+                                                    .trxId(transactionDTO.getTrxId())
+                                                    .status(OrderStatus.FAIL)
+                                                    .method(ContractGameMethod.GIFT.getValue())
+                                                    .errorMessage(eventParam)
+                                                    .build();
+            blockchainDogUserOrderService.updateTrx(userOrderDTO);
+        }
+    }
+
     private AuctionDTO getAuction(String[] callParams) {
         try {
             AuctionDTO auctionDTO = new AuctionDTO();

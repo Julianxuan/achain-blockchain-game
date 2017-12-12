@@ -22,7 +22,8 @@ public enum ContractGameMethod {
     BREEDING(9, "breeding", "繁衍后生成的狗"),
     MATING_CANCEL_AUCTION(10, "cancelMatingTransaction", "取消繁衍的单子"),
     CHANGE_FEE(11,"change_fee","更改费率的方法"),
-    WITHDRAW_BENEFIT(12,"withdraw_benefit","提现方法");
+    WITHDRAW_BENEFIT(12,"withdraw_benefit","提现方法"),
+    GIFT(13,"gift","送狗方法");
 
 
     private final int key;

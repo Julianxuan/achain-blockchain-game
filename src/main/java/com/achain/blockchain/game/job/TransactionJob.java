@@ -103,6 +103,9 @@ public class TransactionJob {
             case SALES_CANCEL_AUCTION:
                 cryptoDogService.cancelAuction(transactionDTO);
                 break;
+            case GIFT:
+                cryptoDogService.gift(transactionDTO);
+                break;
             default:
         }
     }
