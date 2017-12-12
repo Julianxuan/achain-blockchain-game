@@ -2,7 +2,7 @@
 <configuration>
   <include resource="org/springframework/boot/logging/logback/base.xml"/>
   <jmxConfigurator/>
-  <springProfile name="test,production,dev">
+  <springProfile name="test,prod,dev">
     <!--输出到文件-->
     <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
       <file>logs/achain-blockchain-game.log</file>
