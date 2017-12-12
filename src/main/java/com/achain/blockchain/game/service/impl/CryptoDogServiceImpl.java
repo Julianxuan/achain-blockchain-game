@@ -14,10 +14,12 @@ import com.achain.blockchain.game.service.ICryptoDogService;
 import com.achain.blockchain.game.utils.SymmetricEncoder;
 import com.alibaba.fastjson.JSON;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
@@ -96,8 +98,10 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
 
         } else {
 
+
         }
     }
+
 
     @Override
     public void addAuction(TransactionDTO transactionDTO) {
@@ -105,10 +109,67 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         String eventType = transactionDTO.getEventType();
         String eventParam = transactionDTO.getEventParam();
         if (CryptoDogEventType.ADD_AUCTION_SUCCESS.equals(eventType)) {
-
+            AuctionDTO auctionDTO = JSON.parseObject(eventParam, AuctionDTO.class);
+            long endTime = transactionDTO.getTrxTime().getTime() + auctionDTO.getDuration() * PER_BLOCK_TIME;
+            BlockchainDogOrder blockchainDogOrder = new BlockchainDogOrder();
+            blockchainDogOrder.setSeller(transactionDTO.getFromAddr());
+            blockchainDogOrder.setDogId(auctionDTO.getTokenId());
+            blockchainDogOrder.setStatus(OrderStatus.ON.getIntKey());
+            blockchainDogOrder.setOrderId(auctionDTO.getTrx_id());
+            blockchainDogOrder.setStartingPrice(auctionDTO.getStartingPrice());
+            blockchainDogOrder.setEndingPrice(auctionDTO.getEndingPrice());
+            blockchainDogOrder.setBeginTime(transactionDTO.getTrxTime());
+            blockchainDogOrder.setEndTime(new Date(endTime));
+            blockchainDogOrder.setTrxId(transactionDTO.getTrxId());
+            blockchainDogOrderService.insert(blockchainDogOrder);
         } else {
-
+            String apiParams = transactionDTO.getApiParams();
+            if (StringUtils.isEmpty(apiParams)) {
+                return;
+            }
+            String[] callParams = apiParams.split("\\|");
+            Integer expectLength = 4;
+            if (callParams.length < expectLength) {
+                return;
+            }
+            AuctionDTO auctionDTO = getAuction(callParams);
+            if (Objects.isNull(auctionDTO)) {
+                return;
+            }
+            long endTime = transactionDTO.getTrxTime().getTime() + auctionDTO.getDuration() * PER_BLOCK_TIME;
+            BlockchainDogOrder blockchainDogOrder = new BlockchainDogOrder();
+            blockchainDogOrder.setSeller(transactionDTO.getFromAddr());
+            blockchainDogOrder.setDogId(auctionDTO.getTokenId());
+            blockchainDogOrder.setStatus(OrderStatus.FAIL.getIntKey());
+            blockchainDogOrder.setOrderId(auctionDTO.getTrx_id());
+            blockchainDogOrder.setStartingPrice(auctionDTO.getStartingPrice());
+            blockchainDogOrder.setEndingPrice(auctionDTO.getEndingPrice());
+            blockchainDogOrder.setBeginTime(transactionDTO.getTrxTime());
+            blockchainDogOrder.setEndTime(new Date(endTime));
+            blockchainDogOrder.setTrxId(transactionDTO.getTrxId());
+            blockchainDogOrder.setErrorMessage(eventParam);
+            blockchainDogOrderService.insert(blockchainDogOrder);
         }
+    }
+
+    private AuctionDTO getAuction(String[] callParams) {
+        try {
+            AuctionDTO auctionDTO = new AuctionDTO();
+            Integer tokenId = Integer.parseInt(callParams[0]);
+            BigDecimal startPrice = new BigDecimal(callParams[1]).multiply(new BigDecimal(100_000));
+            BigDecimal endPrice = new BigDecimal(callParams[2]).multiply(new BigDecimal(100_000));
+            Long startingPrice = (long) Double.parseDouble(startPrice.toString());
+            Long endingPrice = (long) Double.parseDouble(endPrice.toString());
+            Long duration = Long.parseLong(callParams[3]);
+            auctionDTO.setTokenId(tokenId);
+            auctionDTO.setEndingPrice(startingPrice);
+            auctionDTO.setEndingPrice(endingPrice);
+            auctionDTO.setDuration(duration);
+            return auctionDTO;
+        } catch (NumberFormatException e) {
+            log.error("addAuction|error|", e);
+        }
+        return null;
     }
 
     @Override

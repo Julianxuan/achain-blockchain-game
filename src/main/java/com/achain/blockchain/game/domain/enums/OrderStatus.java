@@ -9,7 +9,8 @@ public enum OrderStatus {
     ON(0, "订单进行中"),
     SUCCESS(1, "成功"),
     CANCEL(2, "订单取消"),
-    EXPIRE(3, "订单失效");
+    EXPIRE(3, "订单失效"),
+    FAIL(4,"订单失败");
 
 
     private final int key;

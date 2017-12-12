@@ -32,6 +32,7 @@ public class BlockchainDogOrder implements Serializable{
     private Date endTime;
     private Date createTime;
     private Date updateTime;
+    private String errorMessage;
 
 
 }

@@ -33,4 +33,8 @@ public class TransactionDTO implements Serializable {
     private String fromAddr;
 
     private Long amount;
+    /**
+     * 调用参数
+     */
+    private String apiParams;
 }

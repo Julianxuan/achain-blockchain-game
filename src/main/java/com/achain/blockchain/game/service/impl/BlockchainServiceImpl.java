@@ -105,6 +105,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
         String fromAddr = temp.getString("from_account");
         Long amount = temp.getJSONObject("amount").getLong("amount");
         String callAbi = reserved.size() >= 1 ? reserved.getString(0) : null;
+        String apiParams = reserved.size() > 1 ? reserved.getString(1) : null;
         //没有方法名
         if (StringUtils.isEmpty(callAbi)) {
             return null;
@@ -127,6 +128,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
         transactionDTO.setCallAbi(callAbi);
         transactionDTO.setFromAddr(fromAddr);
         transactionDTO.setAmount(amount);
+        transactionDTO.setApiParams(apiParams);
         return transactionDTO;
     }
 
