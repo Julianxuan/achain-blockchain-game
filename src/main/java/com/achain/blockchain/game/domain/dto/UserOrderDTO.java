@@ -19,6 +19,6 @@ public class UserOrderDTO {
 
     private String trxId;
     private OrderStatus status;
-    private String errorMessage;
+    private String message;
     private String method;
 }

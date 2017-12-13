@@ -101,7 +101,7 @@ CREATE TABLE `blockchain_dog_user_order` (
   `trx_id` VARCHAR(70) DEFAULT NULL COMMENT '链上的交易单号',
   `method` VARCHAR(64) DEFAULT NULL COMMENT '调用的合约方法名',
   `status` TINYINT NOT NULL COMMENT '订单状态,0-进行中,1-交易成功,4-交易失败',
-  `error_message` VARCHAR(255) DEFAULT NULL COMMENT '错误信息',
+  `message` VARCHAR(255) DEFAULT NULL COMMENT '信息描述',
   `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),

@@ -42,6 +42,18 @@ public class CryptoDogEventType {
 
     public static final String CHANGE_FEE_FAIL = "change_fee_fail";
 
+    public static final String CHANGE_CFO_SUCCESS = "change_CFO_success";
+
+    public static final String CHANGE_CFO_FAIL = "change_CFO_fail";
+
+    public static final String CHANGE_COO_SUCCESS = "change_COO_success";
+
+    public static final String CHANGE_COO_FAIL = "change_COO_fail";
+
+
+
+
+
 
 
 }

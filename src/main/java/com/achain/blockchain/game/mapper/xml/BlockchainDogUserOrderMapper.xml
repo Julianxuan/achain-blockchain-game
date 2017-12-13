@@ -6,7 +6,7 @@
     <id column="id" property="id"/>
     <result column="trx_id" property="trxId"/>
     <result column="status" property="status"/>
-    <result column="error_message" property="errorMessage"/>
+    <result column="message" property="message"/>
     <result column="method" property="method"/>
     <result column="create_time" property="createTime"/>
     <result column="update_time" property="updateTime"/>
@@ -14,7 +14,7 @@
 
   <!-- 通用查询结果列-->
   <sql id="Base_Column_List">
-    id,trx_id AS trxId,status,error_message AS errorMessage,method,
+    id,trx_id AS trxId,status,message,method,
     create_time AS createTime,udpateTime AS updateTime
   </sql>
 </mapper>

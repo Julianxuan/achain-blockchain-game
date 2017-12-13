@@ -44,7 +44,7 @@ public class BlockchainDogUserOrderServiceImpl extends ServiceImpl<BlockchainDog
                 userOrder.setStatus(userOrderDTO.getStatus().getIntKey());
             } else if (OrderStatus.FAIL == userOrderDTO.getStatus()) {
                 userOrder.setStatus(userOrderDTO.getStatus().getIntKey());
-                userOrder.setErrorMessage(userOrderDTO.getErrorMessage());
+                userOrder.setMessage(userOrderDTO.getMessage());
             }
             userOrder.setMethod(userOrderDTO.getMethod());
             baseMapper.updateById(userOrder);
