@@ -118,6 +118,24 @@ public class TransactionJob {
             case RECHARGE:
                 cryptoDogService.recharge(transactionDTO);
                 break;
+            case CHANGE_FEE:
+                cryptoDogService.changeFee(transactionDTO);
+                break;
+            case CHANGE_CFO:
+                cryptoDogService.changeCFO(transactionDTO);
+                break;
+            case CHANGE_COO:
+                cryptoDogService.changeCOO(transactionDTO);
+                break;
+            case QUERY_DOG:
+                cryptoDogService.queryDog(transactionDTO);
+                break;
+            case WITHDRAW_BENEFIT:
+                cryptoDogService.withdrawBenefit(transactionDTO);
+                break;
+            case BREEDING:
+                cryptoDogService.breeding(transactionDTO);
+                break;
             default:
                 log.error("dealRpcReturnData|没有符合的合约方法|method={}|transactionDTO={}",method,transactionDTO);
                 break;

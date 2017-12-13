@@ -403,49 +403,142 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         log.info("changeFee|transactionDTO={}", transactionDTO);
         String eventType = transactionDTO.getEventType();
         String eventParam = transactionDTO.getEventParam();
+        UserOrderDTO userOrderDTO = UserOrderDTO.builder()
+                                                .trxId(transactionDTO.getTrxId())
+                                                .method(ContractGameMethod.CHANGE_FEE.getValue())
+                                                .message(eventParam)
+                                                .build();
         if (CryptoDogEventType.CHANGE_FEE_SUCCESS.equals(eventType)) {
-            log.info("changeFee|success|currentFee={}", eventParam);
-            UserOrderDTO userOrderDTO = UserOrderDTO.builder()
-                                                    .trxId(transactionDTO.getTrxId())
-                                                    .status(OrderStatus.SUCCESS)
-                                                    .method(ContractGameMethod.CHANGE_FEE.getValue())
-                                                    .message(eventParam)
-                                                    .build();
-            blockchainDogUserOrderService.updateTrx(userOrderDTO);
+            userOrderDTO.setStatus(OrderStatus.SUCCESS);
         } else {
-            UserOrderDTO userOrderDTO = UserOrderDTO.builder()
-                                                    .trxId(transactionDTO.getTrxId())
-                                                    .status(OrderStatus.FAIL)
-                                                    .method(ContractGameMethod.CHANGE_FEE.getValue())
-                                                    .message(eventParam)
-                                                    .build();
-            blockchainDogUserOrderService.updateTrx(userOrderDTO);
+            userOrderDTO.setStatus(OrderStatus.FAIL);
         }
+        blockchainDogUserOrderService.updateTrx(userOrderDTO);
     }
 
     @Override
     public void withdrawBenefit(TransactionDTO transactionDTO) {
-
+        log.info("withdrawBenefit|transactionDTO={}", transactionDTO);
+        String eventType = transactionDTO.getEventType();
+        String eventParam = transactionDTO.getEventParam();
+        UserOrderDTO userOrderDTO = UserOrderDTO.builder()
+                                                .trxId(transactionDTO.getTrxId())
+                                                .method(ContractGameMethod.WITHDRAW_BENEFIT.getValue())
+                                                .message(eventParam)
+                                                .build();
+        if (CryptoDogEventType.WITHDRAW_BENEFIT_SUCCESS.equals(eventType)) {
+            userOrderDTO.setStatus(OrderStatus.SUCCESS);
+        } else {
+            userOrderDTO.setStatus(OrderStatus.FAIL);
+        }
+        blockchainDogUserOrderService.updateTrx(userOrderDTO);
     }
 
     @Override
     public void queryDog(TransactionDTO transactionDTO) {
-
+        log.info("queryDog|transactionDTO={}", transactionDTO);
+        String eventType = transactionDTO.getEventType();
+        String eventParam = transactionDTO.getEventParam();
+        UserOrderDTO userOrderDTO = UserOrderDTO.builder()
+                                                .trxId(transactionDTO.getTrxId())
+                                                .method(ContractGameMethod.QUERY_DOG.getValue())
+                                                .message(eventParam)
+                                                .build();
+        if (CryptoDogEventType.QUERY_DOG_SUCCESS.equals(eventType)) {
+            userOrderDTO.setStatus(OrderStatus.SUCCESS);
+        } else {
+            userOrderDTO.setStatus(OrderStatus.FAIL);
+        }
+        blockchainDogUserOrderService.updateTrx(userOrderDTO);
     }
 
     @Override
     public void changeCFO(TransactionDTO transactionDTO) {
-
+        log.info("changeCFO|transactionDTO={}", transactionDTO);
+        String eventType = transactionDTO.getEventType();
+        String eventParam = transactionDTO.getEventParam();
+        UserOrderDTO userOrderDTO = UserOrderDTO.builder()
+                                                .trxId(transactionDTO.getTrxId())
+                                                .method(ContractGameMethod.CHANGE_CFO.getValue())
+                                                .message(eventParam)
+                                                .build();
+        if (CryptoDogEventType.CHANGE_CFO_SUCCESS.equals(eventType)) {
+            userOrderDTO.setStatus(OrderStatus.SUCCESS);
+        } else {
+            userOrderDTO.setStatus(OrderStatus.FAIL);
+        }
+        blockchainDogUserOrderService.updateTrx(userOrderDTO);
     }
 
     @Override
     public void changeCOO(TransactionDTO transactionDTO) {
-
+        log.info("changeCOO|transactionDTO={}", transactionDTO);
+        String eventType = transactionDTO.getEventType();
+        String eventParam = transactionDTO.getEventParam();
+        UserOrderDTO userOrderDTO = UserOrderDTO.builder()
+                                                .trxId(transactionDTO.getTrxId())
+                                                .method(ContractGameMethod.CHANGE_COO.getValue())
+                                                .message(eventParam)
+                                                .build();
+        if (CryptoDogEventType.CHANGE_COO_SUCCESS.equals(eventType)) {
+            userOrderDTO.setStatus(OrderStatus.SUCCESS);
+        } else {
+            userOrderDTO.setStatus(OrderStatus.FAIL);
+        }
+        blockchainDogUserOrderService.updateTrx(userOrderDTO);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void breeding(TransactionDTO transactionDTO) {
+        log.info("breeding|transactionDTO={}", transactionDTO);
+        String eventType = transactionDTO.getEventType();
+        String eventParam = transactionDTO.getEventParam();
+        UserOrderDTO userOrderDTO = UserOrderDTO.builder()
+                                                .trxId(transactionDTO.getTrxId())
+                                                .method(ContractGameMethod.BREEDING.getValue())
+                                                .message(eventParam)
+                                                .build();
+        if (CryptoDogEventType.BREEDING_SUCCESS.equals(eventType)) {
+            String[] split = eventParam.split("\\|");
+            Integer fromDogId = Integer.parseInt(split[0]);
+            String fromDogGene = split[1];
+            Integer toDogId = Integer.parseInt(split[2]);
+            String toDogGene = split[3];
 
+            BlockchainDogInfo fromDog = blockchainDogInfoService.getByDogId(fromDogId);
+            fromDogGene = SymmetricEncoder.AESDncode(config.encodeRules, fromDogGene);
+            fromDog.setGene(fromDogGene);
+            blockchainDogInfoService.updateById(fromDog);
+
+            BlockchainDogInfo toDog = blockchainDogInfoService.getByDogId(toDogId);
+            toDogGene = SymmetricEncoder.AESDncode(config.encodeRules, toDogGene);
+            toDog.setGene(toDogGene);
+            blockchainDogInfoService.updateById(toDog);
+
+            DogDTO newDog = JSON.parseObject(split[4], DogDTO.class);
+            String gene = SymmetricEncoder.AESDncode(config.encodeRules, newDog.getGene());
+            long coolDown = transactionDTO.getTrxTime().getTime() + PER_BLOCK_TIME * newDog.getCooldown_end_block();
+
+            BlockchainDogInfo blockchainDogInfo = new BlockchainDogInfo();
+            blockchainDogInfo.setDogId(newDog.getId());
+            blockchainDogInfo.setOwner(newDog.getOwner());
+            blockchainDogInfo.setGene(gene);
+            blockchainDogInfo.setBirthTime(new Date(newDog.getBirth_time()));
+            blockchainDogInfo.setCooldownEndTime(new Date(coolDown));
+            blockchainDogInfo.setMotherId(newDog.getMother_id());
+            blockchainDogInfo.setFatherId(newDog.getFather_id());
+            blockchainDogInfo.setGeneration(newDog.getGeneration());
+            blockchainDogInfo.setFertility(newDog.getFertility() ? 1 : 0);
+            blockchainDogInfo.setIsPregnant(newDog.getIs_pregnant() ? 1 : 0);
+            blockchainDogInfoService.insert(blockchainDogInfo);
+
+            userOrderDTO.setStatus(OrderStatus.SUCCESS);
+            userOrderDTO.setMessage(null);
+        } else {
+            userOrderDTO.setStatus(OrderStatus.FAIL);
+        }
+        blockchainDogUserOrderService.updateTrx(userOrderDTO);
     }
 
     @Override

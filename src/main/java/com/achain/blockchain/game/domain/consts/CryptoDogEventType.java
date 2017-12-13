@@ -50,6 +50,18 @@ public class CryptoDogEventType {
 
     public static final String CHANGE_COO_FAIL = "change_COO_fail";
 
+    public static final String WITHDRAW_BENEFIT_SUCCESS = "withdraw_benefit_success";
+
+    public static final String WITHDRAW_BENEFIT_FAIL = "withdraw_benefit_fail";
+
+    public static final String QUERY_DOG_SUCCESS = "query_dog_success";
+
+    public static final String QUERY_DOG_FAIL = "query_dog_fail";
+
+    public static final String BREEDING_SUCCESS = "breeding_success";
+
+    public static final String BREEDING_FAIL = "breeding_fail";
+
 
 
 
