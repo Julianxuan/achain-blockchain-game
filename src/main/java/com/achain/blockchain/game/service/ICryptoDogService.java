@@ -96,4 +96,10 @@ public interface ICryptoDogService {
      * @param transactionDTO 原始数据
      */
     void breeding(TransactionDTO transactionDTO);
+
+    /**
+     * 用户合约充值
+     * @param transactionDTO 原始数据
+     */
+    void recharge(TransactionDTO transactionDTO);
 }

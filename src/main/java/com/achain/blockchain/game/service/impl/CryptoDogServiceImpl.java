@@ -448,6 +448,18 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
 
     }
 
+    @Override
+    public void recharge(TransactionDTO transactionDTO) {
+        log.info("recharge|transactionDTO={}", transactionDTO);
+        UserOrderDTO userOrderDTO = UserOrderDTO.builder()
+                                                .trxId(transactionDTO.getTrxId())
+                                                .status(OrderStatus.SUCCESS)
+                                                .method(ContractGameMethod.RECHARGE.getValue())
+                                                .message(null)
+                                                .build();
+        blockchainDogUserOrderService.updateTrx(userOrderDTO);
+    }
+
     private AuctionDTO getAuction(String[] callParams) {
         try {
             AuctionDTO auctionDTO = new AuctionDTO();

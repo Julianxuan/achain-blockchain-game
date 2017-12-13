@@ -3,6 +3,7 @@ package com.achain.blockchain.game.service.impl;
 import com.achain.blockchain.game.conf.Config;
 import com.achain.blockchain.game.domain.dto.OfflineSignDTO;
 import com.achain.blockchain.game.domain.dto.TransactionDTO;
+import com.achain.blockchain.game.domain.enums.ContractGameMethod;
 import com.achain.blockchain.game.service.IBlockchainService;
 import com.achain.blockchain.game.utils.SDKHttpClient;
 import com.alibaba.fastjson.JSONArray;
@@ -70,25 +71,43 @@ public class BlockchainServiceImpl implements IBlockchainService {
         log.info("BlockchainServiceImpl|getBlock 开始处理[{}]", trxId);
         String result = httpClient.post(config.walletUrl, config.rpcUser, "blockchain_get_transaction", trxId);
         JSONObject createTaskJson = JSONObject.parseObject(result);
-        JSONObject operationJson = createTaskJson.getJSONArray("result")
-                                                 .getJSONObject(1)
-                                                 .getJSONObject("trx")
-                                                 .getJSONArray("operations")
-                                                 .getJSONObject(0);
+        JSONArray resultJsonArray = createTaskJson.getJSONArray("result");
+        JSONObject operationJson = resultJsonArray
+            .getJSONObject(1)
+            .getJSONObject("trx")
+            .getJSONArray("operations")
+            .getJSONObject(0);
         //判断交易类型
         String operationType = operationJson.getString("type");
-        String s = operationJson.getString("result");
-        System.out.println(s);
+        String contractId = resultJsonArray
+            .getJSONObject(1)
+            .getJSONObject("trx")
+            .getJSONArray("operations")
+            .getJSONObject(0)
+            .getString("contract_id");
+        //游戏合约充值行为
+        if ("transfer_contract_op_type".equals(operationType) && config.contractId.equals(contractId)) {
+            String expire = resultJsonArray.getJSONObject(1)
+                                           .getJSONObject("trx")
+                                           .getString("expiration");
+            TransactionDTO transactionDTO = new TransactionDTO();
+            transactionDTO.setTrxId(trxId);
+            transactionDTO.setBlockNum(blockNum);
+            transactionDTO.setTrxTime(dealTime(expire));
+            transactionDTO.setContractId(contractId);
+            transactionDTO.setCallAbi(ContractGameMethod.RECHARGE.getValue());
+            return transactionDTO;
+        }
         //不是合约调用就忽略
         if (!"transaction_op_type".equals(operationType)) {
             return null;
         }
 
         JSONObject operationData = operationJson.getJSONObject("data");
-        log.info("BlockchainServiceImpl|operationData={}",operationData);
+        log.info("BlockchainServiceImpl|operationData={}", operationData);
 
         String resultTrxId =
-            createTaskJson.getJSONArray("result").getJSONObject(1).getJSONObject("trx").getString("result_trx_id");
+            resultJsonArray.getJSONObject(1).getJSONObject("trx").getString("result_trx_id");
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(StringUtils.isEmpty(resultTrxId) ? trxId : resultTrxId);
         log.info("getTransaction|transaction_op_type|[blockId={}][trxId={}][result_trx_id={}]", blockNum, trxId,
@@ -101,7 +120,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
         Date trxTime = dealTime(resultJson2.getString("timestamp"));
         JSONArray reserved = resultJson2.getJSONArray("reserved");
         JSONObject temp = resultJson2.getJSONObject("to_contract_ledger_entry");
-        String contractId = temp.getString("to_account");
+        contractId = temp.getString("to_account");
         //不是游戏的合约id就忽略
         if (!config.contractId.equals(contractId)) {
             return null;
@@ -151,21 +170,21 @@ public class BlockchainServiceImpl implements IBlockchainService {
         String method = offlineSignDTO.getMethod();
         String contractId = offlineSignDTO.getContractId();
         if (StringUtils.isEmpty(privateKey) || StringUtils.isEmpty(method) || StringUtils.isEmpty(contractId)) {
-            map.put("msg","param miss");
-            map.put("code","201");
+            map.put("msg", "param miss");
+            map.put("code", "201");
             return map;
         }
         try {
             Transaction trx = new Transaction(new ACTPrivateKey(privateKey), contractId, method, param, 5000L, true);
-            map.put("msg","success");
-            map.put("code","200");
-            map.put("data",trx.toJSONString());
+            map.put("msg", "success");
+            map.put("code", "200");
+            map.put("data", trx.toJSONString());
             return map;
         } catch (Exception e) {
-            log.error("offLineSign|offlineSignDTO={}",offlineSignDTO,e);
+            log.error("offLineSign|offlineSignDTO={}", offlineSignDTO, e);
         }
-        map.put("msg","sign error");
-        map.put("code","202");
+        map.put("msg", "sign error");
+        map.put("code", "202");
         return map;
     }
 

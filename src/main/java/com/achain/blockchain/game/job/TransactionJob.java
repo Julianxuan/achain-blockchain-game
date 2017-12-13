@@ -115,6 +115,9 @@ public class TransactionJob {
             case MATING_BID:
                 cryptoDogService.matingTransfer(transactionDTO);
                 break;
+            case RECHARGE:
+                cryptoDogService.recharge(transactionDTO);
+                break;
             default:
                 log.error("dealRpcReturnData|没有符合的合约方法|method={}|transactionDTO={}",method,transactionDTO);
                 break;
