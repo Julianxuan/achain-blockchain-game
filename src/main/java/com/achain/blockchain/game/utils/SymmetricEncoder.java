@@ -28,7 +28,9 @@ public class SymmetricEncoder {
             KeyGenerator keygen = KeyGenerator.getInstance("AES");
             //2.根据ecnodeRules规则初始化密钥生成器
             //生成一个128位的随机源,根据传入的字节数组
-            keygen.init(128, new SecureRandom(encodeRules.getBytes()));
+            SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+            random.setSeed(encodeRules.getBytes());
+            keygen.init(128, random);
             //3.产生原始对称密钥
             SecretKey originalKey = keygen.generateKey();
             //4.获得原始对称密钥的字节数组
@@ -47,9 +49,9 @@ public class SymmetricEncoder {
             //这里用Base64Encoder中会找不到包
             //解决办法：
             //在项目的Build path中先移除JRE System Library，再添加库JRE System Library，重新编译后就一切正常了。
-            //11.将字符串返回
             return new String(Base64.getEncoder().encode(byteAes), "UTF-8");
         } catch (Exception e) {
+            System.out.println(1);
             e.printStackTrace();
         }
 
@@ -69,17 +71,20 @@ public class SymmetricEncoder {
             KeyGenerator keygen = KeyGenerator.getInstance("AES");
             //2.根据ecnodeRules规则初始化密钥生成器
             //生成一个128位的随机源,根据传入的字节数组
-            keygen.init(128, new SecureRandom(encodeRules.getBytes()));
+            SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+            random.setSeed(encodeRules.getBytes());
+            keygen.init(128, random);
             //3.产生原始对称密钥
-            SecretKey original_key = keygen.generateKey();
+            SecretKey generateKey = keygen.generateKey();
             //4.获得原始对称密钥的字节数组
-            byte[] raw = original_key.getEncoded();
+            byte[] raw = generateKey.getEncoded();
             //5.根据字节数组生成AES密钥
             SecretKey key = new SecretKeySpec(raw, "AES");
             //6.根据指定算法AES自成密码器
             Cipher cipher = Cipher.getInstance("AES");
             //7.初始化密码器，第一个参数为加密(Encrypt_mode)或者解密(Decrypt_mode)操作，第二个参数为使用的KEY
             cipher.init(Cipher.DECRYPT_MODE, key);
+            //8.将加密并编码后的内容解码成字节数组
             //8.将加密并编码后的内容解码成字节数组
             byte[] byteContent = Base64.getDecoder().decode(content);
             byte[] byteDecode = cipher.doFinal(byteContent);
@@ -89,6 +94,17 @@ public class SymmetricEncoder {
         }
         //如果有错就返加nulll
         return null;
+    }
+
+    public static void main(String[] args) {
+        String s =
+            "Z4z6lJEeIlcBNH10ByCCoiFbEo7bxj/iGKMWnydDeCAoOc9PbhF6kG1tEMZ8XnPKztiGue4mfOwlAr7rRBImtX7jfJXoIXj" +
+            "+AWO9zxg4Bf+V6Q7/+axXOsKnHomsPBgX";
+
+        String s1 = AESEncode("fasfds", "aaa");
+        String fasfds1 = AESDncode("fasfds", s1);
+        String fasfds = AESDncode("fasfds", s);
+        System.out.println(fasfds);
     }
 
 

@@ -4,6 +4,7 @@ import com.achain.blockchain.game.domain.entity.BlockchainDogMetingOrder;
 import com.achain.blockchain.game.domain.enums.OrderStatus;
 import com.baomidou.mybatisplus.service.IService;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,4 +20,9 @@ public interface IBlockchainDogMetingOrderService extends IService<BlockchainDog
      * @return 符合条件的订单
      */
     List<BlockchainDogMetingOrder> listByDogIdAndStatus(Integer dogId, OrderStatus orderStatus);
+
+    /**
+     * 获取失效的单子,更改状态
+     */
+    List<BlockchainDogMetingOrder> listExpireOrders(Date nowTime);
 }

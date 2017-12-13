@@ -1,5 +1,11 @@
+DROP DATABASE blockchain_game;
 CREATE DATABASE blockchain_game;
 USE blockchain_game;
+# DROP TABLE blockchain_record;
+# DROP TABLE blockchain_dog_info;
+# DROP TABLE blockchain_dog_order;
+# DROP TABLE blockchain_dog_meting_order;
+# DROP TABLE blockchain_dog_user_order;
 CREATE TABLE `blockchain_record` (
   `id`          INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `block_num`   BIGINT           NOT NULL
@@ -74,7 +80,7 @@ CREATE TABLE `blockchain_dog_meting_order` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
  `order_id` VARCHAR(256) NOT NULL COMMENT '挂单订单号',
   `seller_dog_id` INT(11) UNSIGNED NOT NULL COMMENT '配种狗的编号',
-  `buyer_dog_id` INT(11) UNSIGNED NOT NULL COMMENT '进行配种狗的编号',
+  `buyer_dog_id` INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '进行配种狗的编号',
   `seller` VARCHAR(70) NOT NULL COMMENT '挂单人的地址',
   `buyer` VARCHAR(70) DEFAULT NULL COMMENT '买方的地址',
   `starting_price` BIGINT UNSIGNED COMMENT '起始价格',

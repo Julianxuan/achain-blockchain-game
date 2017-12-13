@@ -3,7 +3,9 @@ package com.achain.blockchain.game.controller;
 import com.achain.blockchain.game.domain.dto.OfflineSignDTO;
 import com.achain.blockchain.game.service.IBlockchainService;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,9 +51,23 @@ public class BroadcastController {
      * @param offlineSignDTO 签名数据
      * @return 签名后的data
      */
-    @PostMapping
+    @PostMapping("offline/sign")
     public Map<String,String> offLineSign(@RequestBody OfflineSignDTO offlineSignDTO){
         log.info("offLineSign|offlineSignDTO={}",offlineSignDTO);
         return blockchainService.offLineSign(offlineSignDTO);
+    }
+
+    /**
+     * 查询账户act余额,获得的余额需要除以10的五次方
+     * @param actAddress act地址
+     * @return 余额
+     */
+    @GetMapping("balance")
+    public Long getBalance(String actAddress){
+        log.info("getBalance|actAddress={}",actAddress);
+        if(StringUtils.isEmpty(actAddress)){
+            return 0L;
+        }
+        return blockchainService.getBalance(actAddress);
     }
 }

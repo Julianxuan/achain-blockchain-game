@@ -52,5 +52,11 @@ public interface IBlockchainService {
      */
     Map<String,String> offLineSign(OfflineSignDTO offlineSignDTO);
 
+    /**
+     * 查询地址余额
+     * @param actAddress　act地址
+     */
+    long getBalance(String actAddress);
+
 
 }
