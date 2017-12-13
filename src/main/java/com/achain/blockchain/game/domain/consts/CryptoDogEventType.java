@@ -38,4 +38,10 @@ public class CryptoDogEventType {
 
     public static final String BID_MATING_FAIL = "mating_transfer_fail";
 
+    public static final String CHANGE_FEE_SUCCESS = "change_fee_success";
+
+    public static final String CHANGE_FEE_FAIL = "change_fee_fail";
+
+
+
 }

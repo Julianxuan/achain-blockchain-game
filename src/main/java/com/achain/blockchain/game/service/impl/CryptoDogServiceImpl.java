@@ -363,7 +363,7 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         log.info("matingTransfer|transactionDTO={}", transactionDTO);
         String eventType = transactionDTO.getEventType();
         String eventParam = transactionDTO.getEventParam();
-        if (CryptoDogEventType.CANCEL_MATING_SUCCESS.equals(eventType)) {
+        if (CryptoDogEventType.BID_MATING_SUCCESS.equals(eventType)) {
             MatingDTO matingDTO = JSON.parseObject(eventParam, MatingDTO.class);
             if(Objects.isNull(matingDTO)){
                 return;
