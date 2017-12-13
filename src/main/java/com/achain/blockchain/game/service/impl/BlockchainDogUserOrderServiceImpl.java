@@ -39,6 +39,19 @@ public class BlockchainDogUserOrderServiceImpl extends ServiceImpl<BlockchainDog
             return;
         }
         BlockchainDogUserOrder userOrder = getByTrxId(userOrderDTO.getTrxId());
+        updateUserOrder(userOrderDTO, userOrder);
+    }
+
+    @Override
+    public void updateRecharge(UserOrderDTO userOrderDTO) {
+        if (StringUtils.isEmpty(userOrderDTO.getTrxId())) {
+            return;
+        }
+        BlockchainDogUserOrder userOrder = getByRechargeTrxId(userOrderDTO.getTrxId());
+        updateUserOrder(userOrderDTO, userOrder);
+    }
+
+    private void updateUserOrder(UserOrderDTO userOrderDTO, BlockchainDogUserOrder userOrder) {
         if (Objects.nonNull(userOrder)) {
             if (OrderStatus.SUCCESS == userOrderDTO.getStatus()) {
                 userOrder.setStatus(userOrderDTO.getStatus().getIntKey());
@@ -49,5 +62,15 @@ public class BlockchainDogUserOrderServiceImpl extends ServiceImpl<BlockchainDog
             userOrder.setMethod(userOrderDTO.getMethod());
             baseMapper.updateById(userOrder);
         }
+    }
+
+    private BlockchainDogUserOrder getByRechargeTrxId(String rechargeTrxId) {
+        EntityWrapper<BlockchainDogUserOrder> wrapper = new EntityWrapper<>();
+        wrapper.where("recharge_trx_id={0}", rechargeTrxId);
+        List<BlockchainDogUserOrder> list = baseMapper.selectList(wrapper);
+        if (list.size() > 0) {
+            return list.get(0);
+        }
+        return null;
     }
 }

@@ -22,4 +22,6 @@ public interface IBlockchainDogUserOrderService extends IService<BlockchainDogUs
      * @param userOrderDTO　更新的信息
      */
     void updateTrx(UserOrderDTO userOrderDTO);
+
+    void updateRecharge(UserOrderDTO userOrderDTO);
 }

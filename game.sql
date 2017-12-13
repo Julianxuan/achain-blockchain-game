@@ -98,6 +98,8 @@ CREATE TABLE `blockchain_dog_meting_order` (
 
 CREATE TABLE `blockchain_dog_user_order` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `recharge_trx_id` VARCHAR(70) DEFAULT NULL COMMENT '充值的trxId',
+  `recharge_status` TINYINT DEFAULT 0 COMMENT '充值的状态,0-进行中,1-成功,4-失败',
   `trx_id` VARCHAR(70) DEFAULT NULL COMMENT '链上的交易单号',
   `method` VARCHAR(64) DEFAULT NULL COMMENT '调用的合约方法名',
   `status` TINYINT NOT NULL COMMENT '订单状态,0-进行中,1-交易成功,4-交易失败',
