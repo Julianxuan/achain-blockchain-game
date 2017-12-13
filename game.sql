@@ -1,11 +1,5 @@
-DROP DATABASE blockchain_game;
 CREATE DATABASE blockchain_game;
 USE blockchain_game;
-# DROP TABLE blockchain_record;
-# DROP TABLE blockchain_dog_info;
-# DROP TABLE blockchain_dog_order;
-# DROP TABLE blockchain_dog_meting_order;
-# DROP TABLE blockchain_dog_user_order;
 CREATE TABLE `blockchain_record` (
   `id`          INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `block_num`   BIGINT           NOT NULL
@@ -24,8 +18,6 @@ CREATE TABLE `blockchain_record` (
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COMMENT ='游戏交易记录表';
-
-
 
 CREATE TABLE `blockchain_dog_info` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -108,12 +100,13 @@ CREATE TABLE `blockchain_dog_user_order` (
   `recharge_status` TINYINT DEFAULT 0 COMMENT '充值的状态,0-进行中,1-成功,4-失败',
   `trx_id` VARCHAR(70) DEFAULT NULL COMMENT '链上的交易单号',
   `method` VARCHAR(64) DEFAULT NULL COMMENT '调用的合约方法名',
-  `status` TINYINT NOT NULL COMMENT '订单状态,0-进行中,1-交易成功,4-交易失败',
+  `status` TINYINT DEFAULT 0 COMMENT '订单状态,0-进行中,1-交易成功,4-交易失败',
   `message` VARCHAR(255) DEFAULT NULL COMMENT '信息描述',
   `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY (`trx_id`)
+  UNIQUE KEY (`trx_id`),
+  UNIQUE KEY (`recharge_trx_id`)
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4

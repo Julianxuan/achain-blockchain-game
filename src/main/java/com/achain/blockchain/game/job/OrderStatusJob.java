@@ -28,6 +28,7 @@ public class OrderStatusJob {
     private IBlockchainDogMetingOrderService blockchainDogMetingOrderService;
     @Autowired
     private IBlockchainDogOrderService blockchainDogOrderService;
+
     @Scheduled(fixedDelay = 10 * 1000)
     public void orderJob() {
         Date currentTime = new Date();

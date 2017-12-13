@@ -16,7 +16,7 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class IBlockchainDogOrderServiceTest {
+public class IBlockchainDogOrderServiceInterfaceTest {
 
     @Autowired
     private IBlockchainDogOrderService blockchainDogOrderService;
