@@ -1,11 +1,14 @@
 package com.achain.blockchain.game.service.impl;
 
 import com.achain.blockchain.game.conf.Config;
+import com.achain.blockchain.game.domain.dto.OfflineSignDTO;
 import com.achain.blockchain.game.domain.dto.TransactionDTO;
 import com.achain.blockchain.game.service.IBlockchainService;
 import com.achain.blockchain.game.utils.SDKHttpClient;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.ms.data.ACTPrivateKey;
+import com.ms.data.Transaction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,9 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -138,6 +144,33 @@ public class BlockchainServiceImpl implements IBlockchainService {
     @Override
     public String networkBroadcast(String message) {
         return httpClient.post(config.walletUrl, config.rpcUser, "network_broadcast_transaction", message);
+    }
+
+    @Override
+    public Map<String, String> offLineSign(OfflineSignDTO offlineSignDTO) {
+        Map<String, String> map = new HashMap<>(3);
+        String param = offlineSignDTO.getParam();
+        offlineSignDTO.setParam(Optional.ofNullable(param).orElse("\"\""));
+        String privateKey = offlineSignDTO.getPrivateKey();
+        String method = offlineSignDTO.getMethod();
+        String contractId = offlineSignDTO.getContractId();
+        if (StringUtils.isEmpty(privateKey) || StringUtils.isEmpty(method) || StringUtils.isEmpty(contractId)) {
+            map.put("msg","param miss");
+            map.put("code","201");
+            return map;
+        }
+        try {
+            Transaction trx = new Transaction(new ACTPrivateKey(privateKey), contractId, method, param, 5000L, true);
+            map.put("msg","success");
+            map.put("code","200");
+            map.put("data",trx.toJSONString());
+            return map;
+        } catch (Exception e) {
+            log.error("offLineSign|offlineSignDTO={}",offlineSignDTO,e);
+        }
+        map.put("msg","sign error");
+        map.put("code","202");
+        return map;
     }
 
     private void parseEventData(JSONObject result, JSONArray jsonArray1) {

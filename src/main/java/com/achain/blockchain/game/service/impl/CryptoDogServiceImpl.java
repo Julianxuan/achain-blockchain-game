@@ -397,6 +397,37 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         }
     }
 
+
+    @Override
+    public void changeFee(TransactionDTO transactionDTO) {
+
+    }
+
+    @Override
+    public void withdrawBenefit(TransactionDTO transactionDTO) {
+
+    }
+
+    @Override
+    public void queryDog(TransactionDTO transactionDTO) {
+
+    }
+
+    @Override
+    public void changeCFO(TransactionDTO transactionDTO) {
+
+    }
+
+    @Override
+    public void changeCOO(TransactionDTO transactionDTO) {
+
+    }
+
+    @Override
+    public void breeding(TransactionDTO transactionDTO) {
+
+    }
+
     private AuctionDTO getAuction(String[] callParams) {
         try {
             AuctionDTO auctionDTO = new AuctionDTO();

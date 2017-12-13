@@ -1,7 +1,10 @@
 package com.achain.blockchain.game.service;
 
+import com.achain.blockchain.game.domain.dto.OfflineSignDTO;
 import com.achain.blockchain.game.domain.dto.TransactionDTO;
 import com.alibaba.fastjson.JSONArray;
+
+import java.util.Map;
 
 /**
  * @author fyk
@@ -41,6 +44,13 @@ public interface IBlockchainService {
      * @return 返回结果
      */
     String networkBroadcast(String message);
+
+    /**
+     * 离线签名广播接口
+     * @param offlineSignDTO 离线签名数据
+     * @return data
+     */
+    Map<String,String> offLineSign(OfflineSignDTO offlineSignDTO);
 
 
 }

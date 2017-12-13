@@ -60,4 +60,40 @@ public interface ICryptoDogService {
      * @param transactionDTO 原始数据
      */
     void matingTransfer(TransactionDTO transactionDTO);
+
+    /**
+     * 更改费率,只有CFO可以调用
+     * @param transactionDTO 原始数据
+     */
+    void changeFee(TransactionDTO transactionDTO);
+
+    /**
+     * 提现,只有CFO可以调用
+     * @param transactionDTO　原始数据
+     */
+    void withdrawBenefit(TransactionDTO transactionDTO);
+
+    /**
+     * 查询狗的信息
+     * @param transactionDTO 原始数据
+     */
+    void queryDog(TransactionDTO transactionDTO);
+
+    /**
+     * 更改CFO,只有CEO能调用
+     * @param transactionDTO 原始数据
+     */
+    void changeCFO(TransactionDTO transactionDTO);
+
+    /**
+     * 更改COO,只有CEO能调用
+     * @param transactionDTO 原始数据
+     */
+    void changeCOO(TransactionDTO transactionDTO);
+
+    /**
+     * 繁衍后生成狗,只有COO能调用
+     * @param transactionDTO 原始数据
+     */
+    void breeding(TransactionDTO transactionDTO);
 }
