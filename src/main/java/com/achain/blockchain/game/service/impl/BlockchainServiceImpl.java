@@ -86,11 +86,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
 
         JSONObject operationData = operationJson.getJSONObject("data");
         log.info("BlockchainServiceImpl|operationData={}",operationData);
-        //不是游戏的合约id就忽略
-//        String contract = operationData.getString("contract").replace("ACT", "CON");
-//        if (!config.contractId.equals(contract)) {
-//            return null;
-//        }
+
         String resultTrxId =
             createTaskJson.getJSONArray("result").getJSONObject(1).getJSONObject("trx").getString("result_trx_id");
         JSONArray jsonArray = new JSONArray();
@@ -105,9 +101,9 @@ public class BlockchainServiceImpl implements IBlockchainService {
         Date trxTime = dealTime(resultJson2.getString("timestamp"));
         JSONArray reserved = resultJson2.getJSONArray("reserved");
         JSONObject temp = resultJson2.getJSONObject("to_contract_ledger_entry");
-        String contract = temp.getString("to_account");
+        String contractId = temp.getString("to_account");
         //不是游戏的合约id就忽略
-        if (!config.contractId.equals(contract)) {
+        if (!config.contractId.equals(contractId)) {
             return null;
         }
         String fromAddr = temp.getString("from_account");
@@ -127,7 +123,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
         JSONObject resultJson = new JSONObject();
         parseEventData(resultJson, jsonArray1);
         TransactionDTO transactionDTO = new TransactionDTO();
-        transactionDTO.setContractId(contract);
+        transactionDTO.setContractId(contractId);
         transactionDTO.setTrxId(origTrxId);
         transactionDTO.setEventParam(resultJson.getString("event_param"));
         transactionDTO.setEventType(resultJson.getString("event_type"));
