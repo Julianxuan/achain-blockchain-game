@@ -90,6 +90,9 @@ public class TransactionJob {
      */
     private void dealRpcReturnData(TransactionDTO transactionDTO) {
         ContractGameMethod method = ContractGameMethod.getMethod(transactionDTO.getCallAbi());
+        if(method == null){
+            return;
+        }
         switch (method) {
             case GENERATE_ZERO_DOG:
                 cryptoDogService.generateZeroDog(transactionDTO);
