@@ -17,6 +17,7 @@ import com.achain.blockchain.game.service.IBlockchainDogMetingOrderService;
 import com.achain.blockchain.game.service.IBlockchainDogOrderService;
 import com.achain.blockchain.game.service.IBlockchainDogUserOrderService;
 import com.achain.blockchain.game.service.ICryptoDogService;
+import com.achain.blockchain.game.utils.DateUtils;
 import com.achain.blockchain.game.utils.SymmetricEncoder;
 import com.alibaba.fastjson.JSON;
 
@@ -144,8 +145,9 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
             blockchainDogOrder.setOrderId(auctionDTO.getTrx_id());
             blockchainDogOrder.setStartingPrice(auctionDTO.getStartingPrice());
             blockchainDogOrder.setEndingPrice(auctionDTO.getEndingPrice());
-            blockchainDogOrder.setBeginTime(transactionDTO.getTrxTime());
-            blockchainDogOrder.setEndTime(new Date(endTime));
+
+            blockchainDogOrder.setBeginTime(DateUtils.getTimeoneEight(transactionDTO.getTrxTime()));
+            blockchainDogOrder.setEndTime(DateUtils.getTimeoneEight(new Date(endTime)));
             blockchainDogOrder.setTrxId(transactionDTO.getTrxId());
             blockchainDogOrderService.insert(blockchainDogOrder);
 
@@ -230,8 +232,8 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
                 blockchainDogMetingOrder.setOrderId(auctionDTO.getTrx_id());
                 blockchainDogMetingOrder.setStartingPrice(auctionDTO.getStartingPrice());
                 blockchainDogMetingOrder.setEndingPrice(auctionDTO.getEndingPrice());
-                blockchainDogMetingOrder.setBeginTime(transactionDTO.getTrxTime());
-                blockchainDogMetingOrder.setEndTime(new Date(endTime));
+                blockchainDogMetingOrder.setBeginTime(DateUtils.getTimeoneEight(transactionDTO.getTrxTime()));
+                blockchainDogMetingOrder.setEndTime(DateUtils.getTimeoneEight(new Date(endTime)));
                 blockchainDogMetingOrder.setTrxId(transactionDTO.getTrxId());
                 blockchainDogMetingOrderService.insert(blockchainDogMetingOrder);
 
@@ -449,13 +451,13 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         BlockchainDogInfo fromDog = blockchainDogInfoService.getByDogId(fromDogId);
         fromDogGene = SymmetricEncoder.aesDecode(config.encodeRules, fromDogGene);
         fromDog.setGene(fromDogGene);
-        fromDog.setCooldownEndTime(coolDown);
+        fromDog.setCooldownEndTime(DateUtils.getTimeoneEight(coolDown));
         blockchainDogInfoService.updateById(fromDog);
 
         BlockchainDogInfo toDog = blockchainDogInfoService.getByDogId(toDogId);
         toDogGene = SymmetricEncoder.aesDecode(config.encodeRules, toDogGene);
         toDog.setGene(toDogGene);
-        toDog.setCooldownEndTime(coolDown);
+        toDog.setCooldownEndTime(DateUtils.getTimeoneEight(coolDown));
         blockchainDogInfoService.updateById(toDog);
     }
 
@@ -468,8 +470,8 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         blockchainDogOrder.setOrderId(auctionDTO.getTrx_id());
         blockchainDogOrder.setStartingPrice(auctionDTO.getStartingPrice());
         blockchainDogOrder.setEndingPrice(auctionDTO.getEndingPrice());
-        blockchainDogOrder.setBeginTime(transactionDTO.getTrxTime());
-        blockchainDogOrder.setEndTime(new Date(endTime));
+        blockchainDogOrder.setBeginTime(DateUtils.getTimeoneEight(transactionDTO.getTrxTime()));
+        blockchainDogOrder.setEndTime(DateUtils.getTimeoneEight(new Date(endTime)));
         blockchainDogOrder.setTrxId(transactionDTO.getTrxId());
         blockchainDogOrderService.insert(blockchainDogOrder);
     }
@@ -479,8 +481,8 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         blockchainDogInfo.setDogId(dogDTO.getId());
         blockchainDogInfo.setOwner(dogDTO.getOwner());
         blockchainDogInfo.setGene(gene);
-        blockchainDogInfo.setBirthTime(new Date(dogDTO.getBirth_time()));
-        blockchainDogInfo.setCooldownEndTime(new Date(coolDown));
+        blockchainDogInfo.setBirthTime(DateUtils.getTimeoneEight(new Date(dogDTO.getBirth_time())));
+        blockchainDogInfo.setCooldownEndTime(DateUtils.getTimeoneEight(new Date(coolDown)));
         blockchainDogInfo.setMotherId(dogDTO.getMother_id());
         blockchainDogInfo.setFatherId(dogDTO.getFather_id());
         blockchainDogInfo.setGeneration(dogDTO.getGeneration());
