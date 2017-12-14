@@ -48,7 +48,16 @@ public class BlockchainDogUserOrderServiceImpl extends ServiceImpl<BlockchainDog
             return;
         }
         BlockchainDogUserOrder userOrder = getByRechargeTrxId(userOrderDTO.getTrxId());
-        updateUserOrder(userOrderDTO, userOrder);
+        if (Objects.nonNull(userOrder)) {
+            if (OrderStatus.SUCCESS == userOrderDTO.getStatus()) {
+                userOrder.setRechargeStatus(userOrderDTO.getStatus().getIntKey());
+            } else if (OrderStatus.FAIL == userOrderDTO.getStatus()) {
+                userOrder.setRechargeStatus(userOrderDTO.getStatus().getIntKey());
+                userOrder.setMessage(userOrderDTO.getMessage());
+            }
+            userOrder.setMethod(userOrderDTO.getMethod());
+            baseMapper.updateById(userOrder);
+        }
     }
 
     private void updateUserOrder(UserOrderDTO userOrderDTO, BlockchainDogUserOrder userOrder) {

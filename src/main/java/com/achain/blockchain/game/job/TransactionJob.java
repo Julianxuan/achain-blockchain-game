@@ -37,7 +37,7 @@ public class TransactionJob {
     private ICryptoDogService cryptoDogService;
 
 
-    @Scheduled(fixedDelay = 10000 * 1000)
+    @Scheduled(fixedDelay = 10 * 1000)
     public void doTransactionJob() {
         log.info("doTransactionJob|开始|HeaderBlockNum={}", config.headerBlockCount);
         long headerBlockCount = blockchainService.getBlockCount();
