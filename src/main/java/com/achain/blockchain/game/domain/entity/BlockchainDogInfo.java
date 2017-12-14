@@ -26,8 +26,6 @@ public class BlockchainDogInfo implements Serializable{
     private Date cooldownEndTime;
     private Integer motherId;
     private Integer fatherId;
-    /**是否怀孕,0-否,1-是*/
-    private Integer isPregnant;
     private Integer generation;
     /**是否可育,0-否,1-是*/
     private Integer fertility;

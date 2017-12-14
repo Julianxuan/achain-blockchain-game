@@ -24,4 +24,5 @@ public class MatingDTO implements Serializable{
      */
     private Integer to_dog_id;
     private Long amount;
+    private Long cooldown;
 }

@@ -29,7 +29,6 @@ CREATE TABLE `blockchain_dog_info` (
   `cooldown_end_time` DATETIME NOT NULL COMMENT '繁衍的冷却结束时间',
   `mother_id` INT(11) UNSIGNED NOT NULL COMMENT '加密狗的母亲编号',
   `father_id` INT(11) UNSIGNED NOT NULL COMMENT '加密狗的父亲的编号',
-  `is_pregnant` TINYINT NOT NULL COMMENT '是否怀孕,0-否,1-是',
   `generation` INT(11) NOT NULL COMMENT '第几代',
   `fertility` TINYINT NOT NULL COMMENT '是否可育,0-否,1-是',
   `trx_id` VARCHAR(70) DEFAULT NULL COMMENT '链上的交易单号',

@@ -20,7 +20,6 @@ public class DogDTO implements Serializable {
     private Long cooldown_end_block;
     private Integer mother_id;
     private Integer father_id;
-    private Boolean is_pregnant;
     private Integer generation;
     private Boolean fertility;
 

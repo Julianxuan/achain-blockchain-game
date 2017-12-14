@@ -73,7 +73,9 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
             }
 
             String gene = SymmetricEncoder.aesDecode(config.encodeRules, dogDTO.getGene());
-            long coolDown = transactionDTO.getTrxTime().getTime() + PER_BLOCK_TIME_MS * dogDTO.getCooldown_end_block();
+            long coolBlockNum = dogDTO.getCooldown_end_block() - transactionDTO.getBlockNum() < 0
+                                ? 0 : (dogDTO.getCooldown_end_block() - transactionDTO.getBlockNum());
+            long coolDown = transactionDTO.getTrxTime().getTime() + PER_BLOCK_TIME_MS * coolBlockNum;
 
             insertNewZeroDog(transactionDTO, dogDTO, gene, coolDown);
 
@@ -121,7 +123,7 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         blockchainDogUserOrderService.updateTrx(userOrderDTO);
     }
 
-
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void addAuction(TransactionDTO transactionDTO) {
         log.info("addAuction|transactionDTO={}", transactionDTO);
@@ -206,6 +208,7 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         blockchainDogUserOrderService.updateTrx(userOrderDTO);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void addMatingTransaction(TransactionDTO transactionDTO) {
         log.info("addMatingTransaction|transactionDTO={}", transactionDTO);
@@ -263,6 +266,7 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         blockchainDogUserOrderService.updateTrx(userOrderDTO);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void matingTransfer(TransactionDTO transactionDTO) {
         log.info("matingTransfer|transactionDTO={}", transactionDTO);
@@ -271,8 +275,10 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
 
         UserOrderDTO userOrderDTO = getUserOrderDTO(transactionDTO.getTrxId(), OrderStatus.FAIL, ContractGameMethod.MATING_BID, eventParam);
         if (CryptoDogEventType.BID_MATING_SUCCESS.equals(eventType)) {
-            MatingDTO matingDTO = JSON.parseObject(eventParam, MatingDTO.class);
-            if (Objects.isNull(matingDTO)) {
+            String[] split = eventParam.split("\\|");
+            MatingDTO matingDTO = JSON.parseObject(split[1], MatingDTO.class);
+            DogDTO newDog = JSON.parseObject(split[0], DogDTO.class);
+            if (Objects.isNull(matingDTO) || Objects.isNull(newDog)) {
                 return;
             }
             List<BlockchainDogMetingOrder> list =
@@ -280,12 +286,29 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
             if (list.size() == 0) {
                 return;
             }
+            String apiParams = transactionDTO.getApiParams();
+            String[] callParams = apiParams.split("\\|");
+            String fromDogGene = callParams[1];
+            String toDogGene = callParams[3];
+            Long cooldown = matingDTO.getCooldown();
+            long parentCoolBlockNum = cooldown - transactionDTO.getBlockNum() < 0
+                                ? 0 : (cooldown - transactionDTO.getBlockNum());
+            long parentCoolDownMs = transactionDTO.getTrxTime().getTime() + PER_BLOCK_TIME_MS * parentCoolBlockNum;
+            Date parentCoolDown = new Date(parentCoolDownMs);
+            updateGeneOfFatherAndMother(matingDTO.getFrom_dog_id(), fromDogGene, matingDTO.getTo_dog_id(), toDogGene,parentCoolDown);
             BlockchainDogMetingOrder blockchainDogMetingOrder = list.get(0);
             blockchainDogMetingOrder.setBuyer(matingDTO.getFrom_address());
             blockchainDogMetingOrder.setBuyerDogId(matingDTO.getFrom_dog_id());
             blockchainDogMetingOrder.setStatus(OrderStatus.SUCCESS.getIntKey());
             blockchainDogMetingOrder.setTransPrice(matingDTO.getAmount());
             blockchainDogMetingOrderService.updateById(blockchainDogMetingOrder);
+
+            String gene = SymmetricEncoder.aesDecode(config.encodeRules, newDog.getGene());
+            long coolBlockNum = newDog.getCooldown_end_block() - transactionDTO.getBlockNum() < 0
+                                ? 0 : (newDog.getCooldown_end_block() - transactionDTO.getBlockNum());
+            long coolDown = transactionDTO.getTrxTime().getTime() + PER_BLOCK_TIME_MS * coolBlockNum;
+
+            insertNewZeroDog(transactionDTO, newDog, gene, coolDown);
 
             userOrderDTO.setMessage(null);
             userOrderDTO.setStatus(OrderStatus.SUCCESS);
@@ -373,7 +396,7 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
             Integer toDogId = Integer.parseInt(split[2]);
             String toDogGene = split[3];
 
-            updateGeneOfFatherAndMother(fromDogId, fromDogGene, toDogId, toDogGene);
+            updateGeneOfFatherAndMother(fromDogId, fromDogGene, toDogId, toDogGene,null);
 
             DogDTO newDog = JSON.parseObject(split[4], DogDTO.class);
             String gene = SymmetricEncoder.aesDecode(config.encodeRules, newDog.getGene());
@@ -389,7 +412,6 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
             blockchainDogInfo.setFatherId(newDog.getFather_id());
             blockchainDogInfo.setGeneration(newDog.getGeneration());
             blockchainDogInfo.setFertility(newDog.getFertility() ? 1 : 0);
-            blockchainDogInfo.setIsPregnant(newDog.getIs_pregnant() ? 1 : 0);
             blockchainDogInfoService.insert(blockchainDogInfo);
 
             userOrderDTO.setStatus(OrderStatus.SUCCESS);
@@ -423,15 +445,17 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
      * @param toDogId 母狗id
      * @param toDogGene 母狗基因
      */
-    private void updateGeneOfFatherAndMother(Integer fromDogId, String fromDogGene, Integer toDogId, String toDogGene) {
+    private void updateGeneOfFatherAndMother(Integer fromDogId, String fromDogGene, Integer toDogId, String toDogGene,Date coolDown) {
         BlockchainDogInfo fromDog = blockchainDogInfoService.getByDogId(fromDogId);
         fromDogGene = SymmetricEncoder.aesDecode(config.encodeRules, fromDogGene);
         fromDog.setGene(fromDogGene);
+        fromDog.setCooldownEndTime(coolDown);
         blockchainDogInfoService.updateById(fromDog);
 
         BlockchainDogInfo toDog = blockchainDogInfoService.getByDogId(toDogId);
         toDogGene = SymmetricEncoder.aesDecode(config.encodeRules, toDogGene);
         toDog.setGene(toDogGene);
+        toDog.setCooldownEndTime(coolDown);
         blockchainDogInfoService.updateById(toDog);
     }
 
@@ -461,7 +485,6 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         blockchainDogInfo.setFatherId(dogDTO.getFather_id());
         blockchainDogInfo.setGeneration(dogDTO.getGeneration());
         blockchainDogInfo.setFertility(dogDTO.getFertility() ? 1 : 0);
-        blockchainDogInfo.setIsPregnant(dogDTO.getIs_pregnant() ? 1 : 0);
         blockchainDogInfo.setTrxId(transactionDTO.getTrxId());
         blockchainDogInfoService.insert(blockchainDogInfo);
     }
