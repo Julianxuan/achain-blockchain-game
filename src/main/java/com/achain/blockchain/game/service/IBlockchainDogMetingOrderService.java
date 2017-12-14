@@ -23,6 +23,8 @@ public interface IBlockchainDogMetingOrderService extends IService<BlockchainDog
 
     /**
      * 获取失效的单子,更改状态
+     * @param nowTime 当前时间
+     * @return 应该置为失效的单子
      */
     List<BlockchainDogMetingOrder> listExpireOrders(Date nowTime);
 }

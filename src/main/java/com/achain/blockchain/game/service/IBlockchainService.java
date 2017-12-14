@@ -58,5 +58,7 @@ public interface IBlockchainService {
      */
     long getBalance(String actAddress);
 
+    Map<String,String> offLineRechargeSign(OfflineSignDTO offlineSignDTO);
+
 
 }

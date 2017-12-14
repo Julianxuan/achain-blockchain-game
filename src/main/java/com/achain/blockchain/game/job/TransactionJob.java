@@ -26,24 +26,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TransactionJob {
 
-    private final Config config;
-
-    private final IBlockchainService blockchainService;
-
-    private final ICryptoDogService cryptoDogService;
 
     @Autowired
     private IBlockchainRecordService blockchainRecordService;
-
-
     @Autowired
-    public TransactionJob(Config config,
-                          IBlockchainService blockchainService,
-                          ICryptoDogService cryptoDogService) {
-        this.config = config;
-        this.blockchainService = blockchainService;
-        this.cryptoDogService = cryptoDogService;
-    }
+    private IBlockchainService blockchainService;
+    @Autowired
+    private Config config;
+    @Autowired
+    private ICryptoDogService cryptoDogService;
+
 
     @Scheduled(fixedDelay = 60 * 60 * 1000)
     public void doTransactionJob() {
@@ -72,6 +64,7 @@ public class TransactionJob {
 
     /**
      * 扫块数据入库
+     *
      * @param transactionDTO 数据
      */
     private void saveTransaction(TransactionDTO transactionDTO) {
@@ -90,7 +83,7 @@ public class TransactionJob {
      */
     private void dealRpcReturnData(TransactionDTO transactionDTO) {
         ContractGameMethod method = ContractGameMethod.getMethod(transactionDTO.getCallAbi());
-        if(method == null){
+        if (method == null) {
             return;
         }
         switch (method) {
@@ -140,7 +133,7 @@ public class TransactionJob {
                 cryptoDogService.breeding(transactionDTO);
                 break;
             default:
-                log.error("dealRpcReturnData|没有符合的合约方法|method={}|transactionDTO={}",method,transactionDTO);
+                log.error("dealRpcReturnData|没有符合的合约方法|method={}|transactionDTO={}", method, transactionDTO);
                 break;
         }
     }

@@ -174,6 +174,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
             map.put("code", "201");
             return map;
         }
+        String errorMsg;
         try {
             Transaction trx = new Transaction(new ACTPrivateKey(privateKey), contractId, method, param, 5000L, true);
             map.put("msg", "success");
@@ -181,9 +182,10 @@ public class BlockchainServiceImpl implements IBlockchainService {
             map.put("data", trx.toJSONString());
             return map;
         } catch (Exception e) {
-            log.error("offLineSign|offlineSignDTO={}", offlineSignDTO, e);
+            errorMsg = e.getMessage();
+            log.error("offLineSign|error|offlineSignDTO={}", offlineSignDTO, e);
         }
-        map.put("msg", "sign error");
+        map.put("msg", errorMsg);
         map.put("code", "202");
         return map;
     }
@@ -209,6 +211,38 @@ public class BlockchainServiceImpl implements IBlockchainService {
             log.error("BlockchainServiceImpl|getBalance|[userAddress={}]出现异常", actAddress, e);
         }
         return 0L;
+    }
+
+    @Override
+    public Map<String, String> offLineRechargeSign(OfflineSignDTO offlineSignDTO) {
+        Map<String, String> map = new HashMap<>(3);
+        String privateKey = offlineSignDTO.getPrivateKey();
+        String contractId = offlineSignDTO.getContractId();
+        String param = offlineSignDTO.getParam();
+        if(StringUtils.isEmpty(privateKey) || StringUtils.isEmpty(contractId) || StringUtils.isEmpty(param)){
+            map.put("msg", "param miss");
+            map.put("code", "201");
+            return map;
+        }
+
+        String errorMsg;
+        try {
+            Transaction trx = new Transaction(
+                new ACTPrivateKey(privateKey),
+                contractId,
+                10000L,
+                (long) (Double.parseDouble(param) * 100000));
+            map.put("msg", "success");
+            map.put("code", "200");
+            map.put("data", trx.toJSONString());
+            return map;
+        }catch (Exception e){
+            errorMsg = e.getMessage();
+            log.error("offLineRechargeSign|error|offlineSignDTO={}", offlineSignDTO, e);
+        }
+        map.put("msg", errorMsg);
+        map.put("code", "202");
+        return map;
     }
 
     private void parseEventData(JSONObject result, JSONArray jsonArray1) {

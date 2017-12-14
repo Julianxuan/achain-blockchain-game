@@ -58,6 +58,18 @@ public class BroadcastController {
     }
 
     /**
+     * 合约充值离线签名接口
+     * @param offlineSignDTO 签名数据
+     * @return 签名后的data
+     */
+    @PostMapping("offLineRechargeSign")
+    public Map<String,String> offLineRechargeSign(@RequestBody OfflineSignDTO offlineSignDTO){
+        log.info("offLineRechargeSign|offlineSignDTO={}",offlineSignDTO);
+        return blockchainService.offLineRechargeSign(offlineSignDTO);
+    }
+
+
+    /**
      * 查询账户act余额,获得的余额需要除以10的五次方
      * @param actAddress act地址
      * @return 余额
