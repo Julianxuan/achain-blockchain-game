@@ -68,7 +68,7 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
                 return;
             }
 
-            String gene = SymmetricEncoder.AESDncode(config.encodeRules, dogDTO.getGene());
+            String gene = SymmetricEncoder.aesDecode(config.encodeRules, dogDTO.getGene());
             long coolDown = transactionDTO.getTrxTime().getTime() + PER_BLOCK_TIME * dogDTO.getCooldown_end_block();
 
             BlockchainDogInfo blockchainDogInfo = new BlockchainDogInfo();
@@ -507,17 +507,17 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
             String toDogGene = split[3];
 
             BlockchainDogInfo fromDog = blockchainDogInfoService.getByDogId(fromDogId);
-            fromDogGene = SymmetricEncoder.AESDncode(config.encodeRules, fromDogGene);
+            fromDogGene = SymmetricEncoder.aesDecode(config.encodeRules, fromDogGene);
             fromDog.setGene(fromDogGene);
             blockchainDogInfoService.updateById(fromDog);
 
             BlockchainDogInfo toDog = blockchainDogInfoService.getByDogId(toDogId);
-            toDogGene = SymmetricEncoder.AESDncode(config.encodeRules, toDogGene);
+            toDogGene = SymmetricEncoder.aesDecode(config.encodeRules, toDogGene);
             toDog.setGene(toDogGene);
             blockchainDogInfoService.updateById(toDog);
 
             DogDTO newDog = JSON.parseObject(split[4], DogDTO.class);
-            String gene = SymmetricEncoder.AESDncode(config.encodeRules, newDog.getGene());
+            String gene = SymmetricEncoder.aesDecode(config.encodeRules, newDog.getGene());
             long coolDown = transactionDTO.getTrxTime().getTime() + PER_BLOCK_TIME * newDog.getCooldown_end_block();
 
             BlockchainDogInfo blockchainDogInfo = new BlockchainDogInfo();

@@ -8,11 +8,14 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author yujianjian
  * @since 2017-12-12 下午4:33
  * AES对称加密和解密
  */
+@Slf4j
 public class SymmetricEncoder {
 
     /**
@@ -22,7 +25,7 @@ public class SymmetricEncoder {
      * @param content     　加密内容
      * @return 加密后的内容
      */
-    public static String AESEncode(String encodeRules, String content) {
+    public static String aesEncode(String encodeRules, String content) {
         try {
             //1.构造密钥生成器，指定为AES算法,不区分大小写
             KeyGenerator keygen = KeyGenerator.getInstance("AES");
@@ -51,10 +54,8 @@ public class SymmetricEncoder {
             //在项目的Build path中先移除JRE System Library，再添加库JRE System Library，重新编译后就一切正常了。
             return new String(Base64.getEncoder().encode(byteAes), "UTF-8");
         } catch (Exception e) {
-            System.out.println(1);
-            e.printStackTrace();
+            log.error("aesEncode|error|", e);
         }
-
         //如果有错就返加nulll
         return null;
     }
@@ -65,7 +66,7 @@ public class SymmetricEncoder {
      * @param content     解密内容
      * @return 解密后的内容
      */
-    public static String AESDncode(String encodeRules, String content) {
+    public static String aesDecode(String encodeRules, String content) {
         try {
             //1.构造密钥生成器，指定为AES算法,不区分大小写
             KeyGenerator keygen = KeyGenerator.getInstance("AES");
@@ -90,7 +91,7 @@ public class SymmetricEncoder {
             byte[] byteDecode = cipher.doFinal(byteContent);
             return new String(byteDecode, "utf-8");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("aesDecode|error|", e);
         }
         //如果有错就返加nulll
         return null;
@@ -101,9 +102,9 @@ public class SymmetricEncoder {
             "Z4z6lJEeIlcBNH10ByCCoiFbEo7bxj/iGKMWnydDeCAoOc9PbhF6kG1tEMZ8XnPKztiGue4mfOwlAr7rRBImtX7jfJXoIXj" +
             "+AWO9zxg4Bf+V6Q7/+axXOsKnHomsPBgX";
 
-        String s1 = AESEncode("fasfds", "aaa");
-        String fasfds1 = AESDncode("fasfds", s1);
-        String fasfds = AESDncode("fasfds", s);
+        String s1 = aesEncode("fasfds", "aaa");
+        String fasfds1 = aesDecode("fasfds", s1);
+        String fasfds = aesDecode("fasfds", s);
         System.out.println(fasfds);
     }
 
