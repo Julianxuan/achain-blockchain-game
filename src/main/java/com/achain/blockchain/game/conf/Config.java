@@ -59,7 +59,7 @@ public class Config {
         wrapper.orderBy("block_num", false);
         BlockchainRecord blockchainRecord = blockchainRecordService.selectOne(wrapper);
         if (Objects.nonNull(blockchainRecord)) {
-            headerBlockCount = blockchainRecord.getBlockNum() + 1;
+            headerBlockCount = blockchainRecord.getBlockNum();
         } else {
             String result = httpClient.post(walletUrl, rpcUser, "blockchain_get_block_count", new JSONArray());
             JSONObject createTaskJson = JSONObject.parseObject(result);
