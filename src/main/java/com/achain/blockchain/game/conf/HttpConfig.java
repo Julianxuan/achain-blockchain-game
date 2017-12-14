@@ -7,7 +7,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.nio.reactor.IOReactorException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,29 +18,29 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 /**
- * Created by qiangkezhen
+ * @author qiangkezhen
  */
 @Configuration
 public class HttpConfig {
 
     private CloseableHttpClient client;
-    private PoolingHttpClientConnectionManager poolingHttpClientConnectionManager;
-    private int TIMEOUT_5_MINS_IN_MILLIS = 5 * 60 * 1000;
 
     @PostConstruct
-    private void init() throws IOReactorException {
+    private void init() {
 
+        int timeout5MinsInMillis = 5 * 60 * 1000;
         RequestConfig requestConfig = RequestConfig.copy(RequestConfig.DEFAULT)
-                                                   .setSocketTimeout(TIMEOUT_5_MINS_IN_MILLIS)
-                                                   .setConnectionRequestTimeout(TIMEOUT_5_MINS_IN_MILLIS)
-                                                   .setConnectTimeout(TIMEOUT_5_MINS_IN_MILLIS)
+                                                   .setSocketTimeout(timeout5MinsInMillis)
+                                                   .setConnectionRequestTimeout(timeout5MinsInMillis)
+                                                   .setConnectTimeout(timeout5MinsInMillis)
                                                    .build();
         ConnectionConfig connectionConfig = ConnectionConfig.copy(ConnectionConfig.DEFAULT)
                                                             .setMalformedInputAction(CodingErrorAction.IGNORE)
                                                             .setUnmappableInputAction(CodingErrorAction.IGNORE)
                                                             .setCharset(Consts.UTF_8)
                                                             .build();
-        poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager();
+        PoolingHttpClientConnectionManager poolingHttpClientConnectionManager =
+            new PoolingHttpClientConnectionManager();
 
         poolingHttpClientConnectionManager.setMaxTotal(1000);
         poolingHttpClientConnectionManager.setDefaultMaxPerRoute(500);
@@ -53,7 +52,8 @@ public class HttpConfig {
                             .setDefaultRequestConfig(requestConfig)
                             .setDefaultConnectionConfig(connectionConfig)
                             .setRetryHandler(new DefaultHttpRequestRetryHandler(3, true))
-                            .useSystemProperties().build();
+                            .useSystemProperties()
+                            .build();
     }
 
     @PreDestroy

@@ -4,6 +4,7 @@ import com.achain.blockchain.game.conf.Config;
 import com.achain.blockchain.game.domain.dto.OfflineSignDTO;
 import com.achain.blockchain.game.domain.dto.TransactionDTO;
 import com.achain.blockchain.game.domain.enums.ContractGameMethod;
+import com.achain.blockchain.game.domain.enums.TrxType;
 import com.achain.blockchain.game.service.IBlockchainService;
 import com.achain.blockchain.game.utils.SDKHttpClient;
 import com.alibaba.fastjson.JSONArray;
@@ -20,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
@@ -97,7 +99,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
         JSONObject resultJson2 = JSONObject.parseObject(resultSignee).getJSONObject("result");
         //和广播返回的统一
         String origTrxId = resultJson2.getString("orig_trx_id");
-        String trxType = resultJson2.getString("trx_type");
+        Integer trxType = Integer.parseInt(resultJson2.getString("trx_type"));
 
         Date trxTime = dealTime(resultJson2.getString("timestamp"));
         JSONArray reserved = resultJson2.getJSONArray("reserved");
@@ -107,11 +109,8 @@ public class BlockchainServiceImpl implements IBlockchainService {
         if (!config.contractId.equals(contractId)) {
             return null;
         }
-        //合约充值
-        String rechargeType = "11";
-        //合约调用
-        String callType = "14";
-        if (rechargeType.equals(trxType)) {
+        TrxType type = TrxType.getTrxType(trxType);
+        if (TrxType.TRX_TYPE_DEPOSIT_CONTRACT == type) {
             TransactionDTO transactionDTO = new TransactionDTO();
             transactionDTO.setTrxId(origTrxId);
             transactionDTO.setBlockNum(blockNum);
@@ -119,7 +118,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
             transactionDTO.setContractId(contractId);
             transactionDTO.setCallAbi(ContractGameMethod.RECHARGE.getValue());
             return transactionDTO;
-        } else if (callType.equals(trxType)) {
+        } else if (TrxType.TRX_TYPE_CALL_CONTRACT == type) {
             String fromAddr = temp.getString("from_account");
             Long amount = temp.getJSONObject("amount").getLong("amount");
             String callAbi = reserved.size() >= 1 ? reserved.getString(0) : null;
@@ -244,7 +243,7 @@ public class BlockchainServiceImpl implements IBlockchainService {
     }
 
     private void parseEventData(JSONObject result, JSONArray jsonArray1) {
-        if (null != jsonArray1 && jsonArray1.size() > 0) {
+        if (Objects.nonNull(jsonArray1) && jsonArray1.size() > 0) {
             StringBuffer eventType = new StringBuffer();
             StringBuffer eventParam = new StringBuffer();
             jsonArray1.forEach(json -> {

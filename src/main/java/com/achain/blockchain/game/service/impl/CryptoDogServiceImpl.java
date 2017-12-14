@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CryptoDogServiceImpl implements ICryptoDogService {
 
-    private final static Long PER_BLOCK_TIME = 10_000L;
+    private final static Long PER_BLOCK_TIME_MS = 10_000L;
 
     @Autowired
     private Config config;
@@ -73,7 +73,7 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
             }
 
             String gene = SymmetricEncoder.aesDecode(config.encodeRules, dogDTO.getGene());
-            long coolDown = transactionDTO.getTrxTime().getTime() + PER_BLOCK_TIME * dogDTO.getCooldown_end_block();
+            long coolDown = transactionDTO.getTrxTime().getTime() + PER_BLOCK_TIME_MS * dogDTO.getCooldown_end_block();
 
             insertNewZeroDog(transactionDTO, dogDTO, gene, coolDown);
 
@@ -134,7 +134,7 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
                                                     eventParam);
         if (CryptoDogEventType.ADD_AUCTION_SUCCESS.equals(eventType)) {
             AuctionDTO auctionDTO = JSON.parseObject(eventParam, AuctionDTO.class);
-            long endTime = transactionDTO.getTrxTime().getTime() + auctionDTO.getDuration() * PER_BLOCK_TIME;
+            long endTime = transactionDTO.getTrxTime().getTime() + auctionDTO.getDuration() * PER_BLOCK_TIME_MS;
             BlockchainDogOrder blockchainDogOrder = new BlockchainDogOrder();
             blockchainDogOrder.setSeller(transactionDTO.getFromAddr());
             blockchainDogOrder.setDogId(auctionDTO.getTokenId());
@@ -219,7 +219,7 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
         if (CryptoDogEventType.ADD_MATING_SUCCESS.equals(eventType)) {
             AuctionDTO auctionDTO = JSON.parseObject(eventParam, AuctionDTO.class);
             if (Objects.nonNull(auctionDTO)) {
-                long endTime = transactionDTO.getTrxTime().getTime() + auctionDTO.getDuration() * PER_BLOCK_TIME;
+                long endTime = transactionDTO.getTrxTime().getTime() + auctionDTO.getDuration() * PER_BLOCK_TIME_MS;
                 BlockchainDogMetingOrder blockchainDogMetingOrder = new BlockchainDogMetingOrder();
                 blockchainDogMetingOrder.setSeller(transactionDTO.getFromAddr());
                 blockchainDogMetingOrder.setSellerDogId(auctionDTO.getTokenId());
@@ -377,7 +377,7 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
 
             DogDTO newDog = JSON.parseObject(split[4], DogDTO.class);
             String gene = SymmetricEncoder.aesDecode(config.encodeRules, newDog.getGene());
-            long coolDown = transactionDTO.getTrxTime().getTime() + PER_BLOCK_TIME * newDog.getCooldown_end_block();
+            long coolDown = transactionDTO.getTrxTime().getTime() + PER_BLOCK_TIME_MS * newDog.getCooldown_end_block();
 
             BlockchainDogInfo blockchainDogInfo = new BlockchainDogInfo();
             blockchainDogInfo.setDogId(newDog.getId());
@@ -436,7 +436,7 @@ public class CryptoDogServiceImpl implements ICryptoDogService {
     }
 
     private void bidZeroDogOrder(TransactionDTO transactionDTO, DogDTO dogDTO, AuctionDTO auctionDTO) {
-        long endTime = transactionDTO.getTrxTime().getTime() + auctionDTO.getDuration() * PER_BLOCK_TIME;
+        long endTime = transactionDTO.getTrxTime().getTime() + auctionDTO.getDuration() * PER_BLOCK_TIME_MS;
         BlockchainDogOrder blockchainDogOrder = new BlockchainDogOrder();
         blockchainDogOrder.setSeller(dogDTO.getOwner());
         blockchainDogOrder.setDogId(dogDTO.getId());

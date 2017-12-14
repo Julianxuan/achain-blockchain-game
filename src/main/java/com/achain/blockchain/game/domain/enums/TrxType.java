@@ -4,7 +4,7 @@ package com.achain.blockchain.game.domain.enums;
 import java.util.Arrays;
 
 /**
- * Created by qiangkz on 2017/6/14.
+ * @author qiangkz on 2017/6/14.
  */
 public enum TrxType {
     //  #账户相关
