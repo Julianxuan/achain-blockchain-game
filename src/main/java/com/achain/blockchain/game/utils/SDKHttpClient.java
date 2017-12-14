@@ -30,12 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class SDKHttpClient {
 
-    private final CloseableHttpClient httpclient;
-
     @Autowired
-    public SDKHttpClient(CloseableHttpClient httpclient) {
-        this.httpclient = httpclient;
-    }
+    private CloseableHttpClient httpclient;
 
     /**
      * 专门处理一个参数，是json的广播交易
