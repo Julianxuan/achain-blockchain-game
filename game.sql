@@ -32,11 +32,13 @@ CREATE TABLE `blockchain_dog_info` (
   `is_pregnant` TINYINT NOT NULL COMMENT '是否怀孕,0-否,1-是',
   `generation` INT(11) NOT NULL COMMENT '第几代',
   `fertility` TINYINT NOT NULL COMMENT '是否可育,0-否,1-是',
+  `trx_id` VARCHAR(70) DEFAULT NULL COMMENT '链上的交易单号',
   `create_time` TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_owner`(`owner`),
-  UNIQUE KEY `idx_dog_id`(`dog_id`)
+  UNIQUE KEY `idx_dog_id`(`dog_id`),
+  UNIQUE KEY (`trx_id`)
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4

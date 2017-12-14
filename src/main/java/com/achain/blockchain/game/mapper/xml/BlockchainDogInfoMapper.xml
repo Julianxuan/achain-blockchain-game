@@ -16,6 +16,7 @@
     <result column="is_pregnant" property="isPregnant"/>
     <result column="generation" property="generation"/>
     <result column="fertility" property="fertility"/>
+    <result column="trx_id" property="trxId"/>
     <result column="create_time" property="createTime"/>
     <result column="update_time" property="updateTime"/>
   </resultMap>
@@ -24,7 +25,7 @@
   <sql id="Base_Column_List">
     id,dog_id AS dogId,nickname,owner,gene,birth_time AS birthTime,
     cooldown_end_time AS cooldownEndTime,mother_id AS motherId,father_id AS fatherId,
-    is_pregnant AS isPregnant,generation,fertility,
+    is_pregnant AS isPregnant,generation,fertility,trx_id AS trxId
     create_time AS createTime,udpateTime AS updateTime
   </sql>
 
